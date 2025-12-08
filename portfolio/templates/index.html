@@ -1,0 +1,231 @@
+{%load static%}
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sirati — Create Your Portfolio in Minutes</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .font-playfair { font-family: 'Playfair Display', serif; }
+
+    /* Carousel Styling */
+    .fade-slide {
+      opacity: 0;
+      transition: opacity 1.2s ease-in-out;
+    }
+    .fade-slide.active {
+      opacity: 1;
+    }
+  </style>
+</head>
+
+<body class="bg-white text-gray-800">
+
+<!-- NAVBAR -->
+<header class="w-full py-6 fixed top-0 left-0 bg-white backdrop-blur-lg bg-opacity-80 shadow-sm z-50">
+  <div class="container mx-auto px-6 flex justify-between items-center">
+    <h1 class="text-2xl font-bold text-indigo-600">Sirati</h1>
+    {%if not user.is_authenticated%}
+      <a href="/accounts/sign_up" class="px-6 py-2 bg-indigo-600 text-white rounded-full shadow hover:bg-indigo-700 transition">Get Started</a>
+    {%elif not user.profile.website%}
+      <a href="/create" class="px-6 py-2 bg-indigo-600 text-white rounded-full shadow hover:bg-indigo-700 transition">Complete Registration</a>
+    {%else%}
+      <a href="/{{user.profile.website.unique_name}}" class="px-6 py-2 bg-indigo-600 text-white rounded-full shadow hover:bg-indigo-700 transition">Your Portfolio</a>
+    {%endif%}
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="pt-32 pb-28 bg-gradient-to-br from-white via-gray-50 to-indigo-50">
+  <div class="container mx-auto px-6 grid md:grid-cols-2 gap-16 items-center">
+    
+    <!-- HERO CONTENT -->
+    <div>
+      <h1 class="text-5xl md:text-6xl font-playfair font-bold text-gray-900 leading-tight">
+        Your Resume.<br/>
+        <span class="text-indigo-600">Transformed into a beautiful portfolio.</span>
+      </h1>
+
+      <p class="mt-6 text-lg text-gray-600 leading-relaxed">
+        Sirati (سيرتي) instantly turns your resume into a polished, modern online portfolio.
+        Edit live, customize, and publish with a single click.
+      </p>
+
+      <div class="mt-8 flex gap-4">
+        <a href="#pricing" class="px-8 py-4 bg-indigo-600 text-white text-lg rounded-full shadow-lg hover:bg-indigo-700 transition">
+          Pricing
+        </a>
+        <a href="#how" class="px-8 py-4 border border-gray-300 text-gray-700 text-lg rounded-full hover:bg-gray-100 transition">
+          See How It Works
+        </a>
+      </div>
+    </div>
+
+    <!-- HERO IMAGE SLIDER -->
+    <div class="relative w-full h-96 rounded-3xl overflow-hidden shadow-2xl">
+      <img src="{%static 'imgs/img3.png'%}"
+           class="absolute inset-0 w-full h-full object-cover fade-slide active">
+      <img src="{%static 'imgs/img2.png'%}"
+           class="absolute inset-0 w-full h-full object-cover fade-slide">
+      <img src="{%static 'imgs/img1.png'%}"
+           class="absolute inset-0 w-full h-full object-cover fade-slide">
+    </div>
+
+  </div>
+</section>
+
+<!-- HOW IT WORKS (No Icons) -->
+<section id="how" class="py-28 bg-white">
+  <div class="container mx-auto px-6">
+    <h2 class="text-4xl md:text-5xl font-playfair font-bold text-center text-gray-900 mb-16">
+      How Sirati Works
+    </h2>
+
+    <div class="grid md:grid-cols-3 gap-12">
+
+      <!-- STEP 1 -->
+      <div class="bg-gray-50 rounded-3xl p-10 shadow-lg hover:shadow-xl transition text-center">
+        <img src="https://images.unsplash.com/photo-1587614382346-4ec70b6c61a6?q=80&w=800"
+             class="rounded-2xl mb-8 shadow-lg">
+        <h3 class="text-2xl font-semibold mb-3">Fill/Upload</h3>
+        <p class="text-gray-600">Enter Your Information.</p>
+      </div>
+
+      <!-- STEP 2 -->
+      <div class="bg-gray-50 rounded-3xl p-10 shadow-lg hover:shadow-xl transition text-center">
+        <img src="https://images.unsplash.com/photo-1553877522-43269d4ea984?q=80&w=800"
+             class="rounded-2xl mb-8 shadow-lg">
+        <h3 class="text-2xl font-semibold mb-3">Preview & Customize</h3>
+        <p class="text-gray-600">See your portfolio live. Add Your Skills, Certificates and Work Experience.</p>
+      </div>
+
+      <!-- STEP 3 -->
+      <div class="bg-gray-50 rounded-3xl p-10 shadow-lg hover:shadow-xl transition text-center">
+        <img src="https://images.unsplash.com/photo-1518432031352-d6fc5c10da5a?q=80&w=800"
+             class="rounded-2xl mb-8 shadow-lg">
+        <h3 class="text-2xl font-semibold mb-3">Publish & Share</h3>
+        <p class="text-gray-600">Choose a plan and publish your portfolio instantly (7 days free trial).</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="py-28 bg-gray-50">
+  <div class="container mx-auto px-6">
+    <h2 class="text-4xl md:text-5xl font-playfair font-bold text-center text-gray-900 mb-20">
+      Features Designed for You
+    </h2>
+
+    <div class="grid md:grid-cols-4 gap-12">
+
+      <!-- FEATURE Card -->
+      <div class="bg-white p-10 rounded-3xl shadow-lg hover:shadow-xl text-center transition">
+        <div class="bg-indigo-100 p-5 rounded-full inline-block mb-6">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path d="M12 6v6l4 2" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h3 class="text-xl font-semibold mb-3">Instant Portfolio</h3>
+        <p class="text-gray-600">Your resume is automatically converted into a polished online portfolio.</p>
+      </div>
+
+      <div class="bg-white p-10 rounded-3xl shadow-lg hover:shadow-xl text-center transition">
+        <div class="bg-indigo-100 p-5 rounded-full inline-block mb-6">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path d="M4 6h16M4 12h16M4 18h7" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h3 class="text-xl font-semibold mb-3">Live Editing</h3>
+        <p class="text-gray-600">Edit anything live and see changes instantly without reloading.</p>
+      </div>
+
+      <div class="bg-white p-10 rounded-3xl shadow-lg hover:shadow-xl text-center transition">
+        <div class="bg-indigo-100 p-5 rounded-full inline-block mb-6">
+          <i style='color: rgb(79 70 229 / var(--tw-text-opacity, 1)); font-size:30px;' class='fa-solid fa-crown'></i>
+        </div>
+        <h3 class="text-xl font-semibold mb-3">Premium Templates</h3>
+        <p class="text-gray-600">Choose elegant, modern templates built to impress employers.</p>
+      </div>
+
+      <div class="bg-white p-10 rounded-3xl shadow-lg hover:shadow-xl text-center transition">
+        <div class="bg-indigo-100 p-5 rounded-full inline-block mb-6">
+          <i style='color: rgb(79 70 229 / var(--tw-text-opacity, 1)); font-size:30px;' class='fas fa-usd'></i>
+        </div>
+        <h3 class="text-xl font-semibold mb-3">Affordable</h3>
+        <p class="text-gray-600">Flexible plans including monthly, annual, or lifetime purchase.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing" class="py-32 bg-white">
+  <div class="container mx-auto px-6 text-center">
+    <h2 class="text-4xl md:text-5xl font-playfair font-bold text-gray-900 mb-20">Choose Your Plan</h2>
+
+    <div class="grid md:grid-cols-3 gap-12 max-w-6xl mx-auto">
+
+      <!-- MONTHLY -->
+      <div class="p-10 rounded-3xl shadow-xl bg-gray-50 hover:shadow-2xl transition">
+        <h3 class="text-2xl font-semibold mb-4">Monthly</h3>
+        <p class="text-5xl font-bold text-indigo-600 mb-4">$1</p>
+        <p class="text-gray-600 mb-8">Perfect for short-term projects</p>
+        <a class="block bg-indigo-600 text-white py-4 rounded-full shadow hover:bg-indigo-700 transition cursor-pointer">
+          Subscribe
+        </a>
+      </div>
+
+      <!-- ANNUAL -->
+      <div class="p-12 rounded-3xl shadow-2xl bg-indigo-600 text-white scale-105">
+        <h3 class="text-2xl font-semibold mb-4">Annual</h3>
+        <p class="text-5xl font-bold mb-4">$6</p>
+        <p class="text-indigo-100 mb-8">Best value — save 50% compared to monthly.</p>
+        <a class="block bg-white text-indigo-700 py-4 rounded-full shadow hover:bg-indigo-50 transition cursor-pointer">
+          Subscribe Yearly
+        </a>
+      </div>
+
+      <!-- ONE-TIME -->
+      <div class="p-10 rounded-3xl shadow-xl bg-gray-50 hover:shadow-2xl transition">
+        <h3 class="text-2xl font-semibold mb-4">One-Time Purchase</h3>
+        <p class="text-5xl font-bold text-indigo-600 mb-4">$50</p>
+        <p class="text-gray-600 mb-8">Lifetime access. Own your portfolio forever.</p>
+        <a class="block bg-indigo-600 text-white py-4 rounded-full shadow hover:bg-indigo-700 transition cursor-pointer">
+          Buy Forever
+        </a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="py-16 bg-gray-900 text-gray-300">
+  <div class="container mx-auto px-6 text-center">
+    <h3 class="text-xl font-semibold text-white">Sirati</h3>
+    <p class="mt-2 text-gray-400">Your resume, beautifully transformed.</p>
+    <p class="text-gray-500 mt-6">© 2025 Sirati. All rights reserved.</p>
+  </div>
+</footer>
+
+<!-- CAROUSEL SCRIPT -->
+<script>
+  const slides = document.querySelectorAll('.fade-slide');
+  let index = 0;
+
+  setInterval(() => {
+    slides[index].classList.remove('active');
+    index = (index + 1) % slides.length;
+    slides[index].classList.add('active');
+  }, 3500);
+</script>
+
+</body>
+</html>

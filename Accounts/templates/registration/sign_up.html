@@ -1,0 +1,234 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="utf-8" />
+  <title>Sirati — Create Account</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .font-playfair { font-family: 'Playfair Display', serif; }
+    /* small polished touches */
+    .input-icon { width: 42px; height: 42px; display:flex; align-items:center; justify-content:center; border-radius: 10px; }
+    .fade-in { animation: fadeIn .5s ease forwards; opacity:0; }
+    @keyframes fadeIn { to { opacity:1; } }
+    /* style Django errorlist */
+    .errorlist { color: #dc2626; margin-top: 6px; font-size: 0.9rem; list-style: none; padding-left: 0; }
+  </style>
+</head>
+<body class="bg-white text-gray-800">
+
+<!-- NAVBAR -->
+<header class="w-full py-6 fixed top-0 left-0 bg-white backdrop-blur-lg bg-opacity-80 shadow-sm z-50">
+  <div class="container mx-auto px-6 flex justify-between items-center">
+    <h1 class="text-2xl font-bold text-indigo-600">Sirati</h1>
+    <a href="/accounts/login" class="px-5 py-2 border border-indigo-600 text-indigo-600 rounded-full hover:bg-indigo-600 hover:text-white transition">
+      Login
+    </a>
+  </div>
+</header>
+
+<section class="grid md:grid-cols-2 min-h-screen pt-32 bg-gradient-to-br from-white via-gray-50 to-indigo-50">
+
+  <!-- LEFT BRAND -->
+  <div class="flex flex-col justify-center px-8 lg:px-20 text-center md:text-left fade-in">
+    <h2 class="text-4xl md:text-5xl font-playfair font-bold text-gray-900 leading-tight">
+      Create your online portfolio<br/>in minutes.
+    </h2>
+    <p class="mt-6 text-gray-600 max-w-xl">
+      Join Sirati to instantly convert your resume into a beautiful, shareable portfolio.
+      Personal onboarding for early adopters.
+    </p>
+    <p class="mt-4 text-gray-500 text-sm">No credit card required • 24/7 support for early users</p>
+  </div>
+
+  <!-- RIGHT FORM CARD -->
+  <div class="flex justify-center items-center px-6">
+    <div class="w-full max-w-md bg-white p-8 md:p-10 rounded-3xl shadow-2xl">
+      <!-- header -->
+      <div class="mb-6 text-center">
+        <div class="inline-flex items-center gap-3">
+          <div class="bg-indigo-50 p-3 rounded-xl input-icon">
+            <!-- simple logo mark -->
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="text-indigo-600">
+              <path d="M4 12h16M12 4v16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-2xl font-semibold text-gray-900">Create your account</h3>
+            <p class="text-gray-500 text-sm">Secure, fast onboarding — start your portfolio today.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form -->
+      <form method="post" enctype="multipart/form-data" class="space-y-4">
+        {% csrf_token %}
+
+        <!-- Username -->
+        <div>
+          <label class="text-gray-700 text-sm mb-1 block">Username</label>
+          <div class="flex items-center gap-3">
+            <div class="bg-indigo-50 p-3 rounded-xl input-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-indigo-600" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a4 4 0 100-8 4 4 0 000 8z"/><path fill-rule="evenodd" d="M.458 16.042A7.968 7.968 0 0110 14c2.21 0 4.208.896 5.642 2.357A9.957 9.957 0 0010 20c-2.21 0-4.208-.896-5.642-2.357z" clip-rule="evenodd"/></svg>
+            </div>
+            {{ Form.username }}
+          </div>
+          {% if Form.username.errors %}
+            <ul class="errorlist">{{ Form.username.errors }}</ul>
+          {% endif %}
+        </div>
+
+        <!-- First & Last as two columns -->
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="text-gray-700 text-sm mb-1 block">First name</label>
+            {{ Form.first_name }}
+            {% if Form.first_name.errors %}
+              <ul class="errorlist">{{ Form.first_name.errors }}</ul>
+            {% endif %}
+          </div>
+          <div>
+            <label class="text-gray-700 text-sm mb-1 block">Last name</label>
+            {{ Form.last_name }}
+            {% if Form.last_name.errors %}
+              <ul class="errorlist">{{ Form.last_name.errors }}</ul>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div>
+          <label class="text-gray-700 text-sm mb-1 block">Email</label>
+          <div class="flex items-center gap-3">
+            <div class="bg-indigo-50 p-3 rounded-xl input-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-indigo-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 8l9 6 9-6"/><path d="M21 8v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8"/></svg>
+            </div>
+            {{ Form.email }}
+          </div>
+          {% if Form.email.errors %}
+            <ul class="errorlist">{{ Form.email.errors }}</ul>
+          {% endif %}
+        </div>
+
+        <!-- Password -->
+        <div>
+          <label class="text-gray-700 text-sm mb-1 block">Password</label>
+          <div class="relative">
+            {{ Form.password1 }}
+            <button type="button" id="togglePwd" class="absolute right-2 top-2 text-sm px-2 py-1 rounded-md text-indigo-600 hover:bg-indigo-50 transition hidden">
+              Show
+            </button>
+          </div>
+          <div class="mt-2 h-2 rounded-full bg-gray-100 overflow-hidden">
+            <div id="pwdStrength" class="h-full w-0 bg-red-400 transition-all"></div>
+          </div>
+          {% if Form.password1.errors %}
+            <ul class="errorlist">{{ Form.password1.errors }}</ul>
+          {% endif %}
+        </div>
+
+        <!-- Confirm Password -->
+        <div>
+          <label class="text-gray-700 text-sm mb-1 block">Confirm password</label>
+          {{ Form.password2 }}
+          {% if Form.password2.errors %}
+            <ul class="errorlist">{{ Form.password2.errors }}</ul>
+          {% endif %}
+        </div>
+
+        <!-- Terms -->
+        <div class="text-xs text-gray-500">
+          By creating an account you agree to our
+          <a href="#" class="text-indigo-600 hover:underline">Terms</a> and
+          <a href="#" class="text-indigo-600 hover:underline">Privacy Policy</a>.
+        </div>
+
+        <button type="submit" id="createBtn"
+          class="w-full py-3 mt-1 bg-gradient-to-r from-indigo-600 to-indigo-500 text-white rounded-full shadow-lg hover:from-indigo-700 hover:to-indigo-600 transition font-semibold">
+          Create Account
+        </button>
+      </form>
+
+      <p class="text-gray-500 text-sm text-center mt-6">
+        Already have an account? <a href="/accounts/login" class="text-indigo-600 font-medium hover:underline">Login</a>
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- small script: apply classes to Django form widgets and add password helpers -->
+<script>
+  // Utility to add Tailwind classes to inputs rendered by Django forms
+  function styleField(id, extraClasses = '') {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.add('w-full', 'py-3', 'px-4', 'rounded-xl', 'border', 'border-gray-200', 'bg-gray-50', 'text-gray-700', 'focus:outline-none', 'focus:ring-2', 'focus:ring-indigo-200', 'transition');
+    if (extraClasses) el.classList.add(...extraClasses.split(' '));
+    // ensure placeholder exists (if widget has none)
+    if (!el.getAttribute('placeholder')) {
+      const placeholders = {
+        'id_username': 'Choose a username',
+        'id_first_name': 'First name',
+        'id_last_name': 'Last name',
+        'id_email': 'you@example.com',
+        'id_password1': 'Create a strong password',
+        'id_password2': 'Repeat your password'
+      };
+      if (placeholders[id]) el.setAttribute('placeholder', placeholders[id]);
+    }
+  }
+
+  // Apply styling to expected ids
+  ['id_username','id_first_name','id_last_name','id_email','id_password1','id_password2'].forEach(id => styleField(id));
+
+  // Password toggle + strength
+  const pwd = document.getElementById('id_password1');
+  const toggle = document.getElementById('togglePwd');
+  const strength = document.getElementById('pwdStrength');
+
+  function scorePassword(p) {
+    if (!p) return 0;
+    let score = 0;
+    if (p.length >= 8) score += 1;
+    if (/[A-Z]/.test(p)) score += 1;
+    if (/[0-9]/.test(p)) score += 1;
+    if (/[^A-Za-z0-9]/.test(p)) score += 1;
+    return score;
+  }
+
+  function updateStrength() {
+    if (!pwd) return;
+    const s = scorePassword(pwd.value);
+    const widths = ['0%','25%','50%','75%','100%'];
+    const colors = ['bg-red-400','bg-orange-400','bg-yellow-400','bg-lime-400','bg-green-500'];
+    strength.style.width = widths[s];
+    strength.className = 'h-full transition-all ' + (colors[s] || 'bg-red-400');
+    // show toggle only when there is input
+    if (pwd.value.length > 0) toggle.classList.remove('hidden'); else toggle.classList.add('hidden');
+  }
+
+  if (pwd) {
+    pwd.addEventListener('input', updateStrength);
+    // initial
+    updateStrength();
+  }
+
+  if (toggle && pwd) {
+    toggle.addEventListener('click', () => {
+      if (pwd.type === 'password') { pwd.type = 'text'; toggle.textContent = 'Hide'; }
+      else { pwd.type = 'password'; toggle.textContent = 'Show'; }
+    });
+  }
+
+  // small accessibility: focus the first field on load
+  window.addEventListener('load', () => {
+    const first = document.getElementById('id_username');
+    if (first) first.focus();
+  });
+</script>
+
+</body>
+</html>
