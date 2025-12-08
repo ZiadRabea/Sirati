@@ -8,6 +8,7 @@ from django.core.mail import EmailMessage
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
 from datetime import timedelta
 from .forms import *
 from .filters import *
@@ -320,7 +321,8 @@ def publish_website(request, slug):
     except Exception:
         logger.exception("Failed to send publish request email")
         return JsonResponse({"status": "error", "message": "Failed to send email. Please try again later."}, status=500)
-    
+
+@csrf_exempt
 @require_POST
 def contact_website(request, slug):
     """
