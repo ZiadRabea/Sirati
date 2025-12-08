@@ -1,8 +1,12 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.shortcuts import get_object_or_404
-from django.http import JsonResponse, HttpResponseForbidden
+from django.http import JsonResponse, HttpResponseForbidden, HttpResponseBadRequest
+from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.decorators.http import require_POST
+from django.core.mail import EmailMessage
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
 from django.utils import timezone
 from datetime import timedelta
 from .forms import *
@@ -11,7 +15,7 @@ from .models import *
 from django.conf import settings
 from django.core.mail import send_mail, mail_admins, BadHeaderError
 import logging
-
+import json
 logger = logging.getLogger(__name__)
 # Create your views here.
 
@@ -83,7 +87,7 @@ def create(request):
 
     return render(request, "create.html", context)
 
-
+@xframe_options_exempt
 def display(request, slug):
     website = Website.objects.get(unique_name=slug)
     skills = Skill.objects.filter(website=website)
@@ -316,3 +320,70 @@ def publish_website(request, slug):
     except Exception:
         logger.exception("Failed to send publish request email")
         return JsonResponse({"status": "error", "message": "Failed to send email. Please try again later."}, status=500)
+    
+@require_POST
+def contact_website(request, slug):
+    """
+    Accepts JSON: { "name": "...", "email": "...", "message": "..." }
+    Sends an email to the portfolio owner (website.user.email or website.email).
+    """
+    website = get_object_or_404(Website, unique_name=slug)
+
+    # parse JSON body
+    try:
+        payload = json.loads(request.body.decode() or "{}")
+    except Exception:
+        return HttpResponseBadRequest("Invalid JSON payload.")
+
+    name = (payload.get("name") or "").strip()
+    sender_email = (payload.get("email") or "").strip()
+    message_text = (payload.get("message") or "").strip()
+
+    if not (name and sender_email and message_text):
+        return JsonResponse({"status": "error", "message": "Please provide name, email and message."}, status=400)
+
+    try:
+        validate_email(sender_email)
+    except ValidationError:
+        return JsonResponse({"status": "error", "message": "Invalid email address."}, status=400)
+
+    # pick recipient: prefer related user email, fallback to website.email (if you have it)
+    recipient = None
+    try:
+        recipient = getattr(website.user, "email", None)
+    except Exception:
+        recipient = None
+
+    if not recipient:
+        recipient = getattr(website, "email", None)
+
+    if not recipient:
+        logger.error("No recipient email configured for website %s", unique_name)
+        return JsonResponse({"status": "error", "message": "Owner email not configured."}, status=500)
+
+    from_email = getattr(settings, "DEFAULT_FROM_EMAIL", "no-reply@yourdomain.com")
+
+    subject = f"[Sirati] Message for {website.full_name or website.unique_name} — from {name}"
+    body = (
+        f"You have a new message from your Sirati portfolio page.\n\n"
+        f"Website: {website.full_name or website.unique_name} ({getattr(website, 'unique_name')})\n"
+        f"From: {name}\n"
+        f"Email: {sender_email}\n\n"
+        f"Message:\n{message_text}\n\n"
+        f"---\nThis message was delivered via Sirati."
+    )
+
+    email_msg = EmailMessage(
+        subject=subject,
+        body=body,
+        from_email=from_email,
+        to=[recipient],
+        headers={"Reply-To": sender_email},
+    )
+
+    try:
+        email_msg.send(fail_silently=False)
+        return JsonResponse({"status": "ok", "message": "Message delivered — the owner will receive an email."})
+    except Exception:
+        logger.exception("Failed to send contact email for website %s", unique_name)
+        return JsonResponse({"status": "error", "message": "Failed to send message. Please try again later."}, status=500)

@@ -25,6 +25,7 @@ urlpatterns = [
     path('', home),
     path('error/', error),
     path('<str:slug>/publish/', publish_website, name='website_publish'),
+    path('<str:slug>/contact/', contact_website, name='website_contact'),
     # path('talents/find', search),
     path('create/', create),
     path('<str:slug>/skills/', add_skill),

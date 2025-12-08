@@ -165,7 +165,10 @@
       </form>
     </div>
     <div class="container">
-      <iframe src="https://cszido.github.io/myportfolio"></iframe>
+      <iframe id="displayframe"></iframe>
     </div>
+    <script>
+      document.getElementById("displayframe").src = String(window.location.origin) + "/ZiadRabea"
+    </script>
   </body>
 </html>

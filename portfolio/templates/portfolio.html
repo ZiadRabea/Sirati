@@ -186,8 +186,24 @@
       opacity:0;
       transition: transform .28s cubic-bezier(.2,.9,.2,1), opacity .2s ease;
       z-index: 9999;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:220px;
     }
     .toast.show { transform: translateY(0); opacity:1; }
+
+    /* success and error variations */
+    .toast.success {
+      background: linear-gradient(180deg,#052e14,#084d24);
+      border-color: rgba(34,197,94,0.18);
+      color: #d1fae5;
+    }
+    .toast.error {
+      background: linear-gradient(180deg,#2b0404,#5a0808);
+      border-color: rgba(239,68,68,0.18);
+      color: #ffe4e4;
+    }
 
     /* Publish request floating button */
     .publish-btn {
@@ -207,6 +223,7 @@
       cursor:pointer;
       transition: transform .15s ease, box-shadow .2s ease, opacity .12s ease;
       color: #08121a;
+      position:fixed;
     }
     .publish-btn:hover { transform: translateY(-4px); box-shadow: 0 18px 40px rgba(124,92,255,0.22); }
     .publish-btn .label {
@@ -226,6 +243,24 @@
     }
     .publish-btn:focus .label,
     .publish-btn:hover .label { transform: translateY(0); opacity:1; }
+
+    /* disabled & loading styles */
+    .publish-btn.disabled {
+      opacity: 0.55;
+      cursor: not-allowed !important;
+      transform: none;
+      box-shadow: none;
+    }
+    .publish-btn.loading {
+      cursor: progress !important;
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 18px 50px rgba(0,0,0,0.45);
+    }
+    .publish-btn .spinner {
+      font-size: 18px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin { from { transform: rotate(0deg);} to { transform: rotate(360deg);} }
 
     /* Floating nav container */
     #float-nav { position:fixed; top:50%; left:20px; transform:translateY(-50%); display:flex; flex-direction:column; gap:15px; z-index:999; }
@@ -248,7 +283,7 @@
 <body>
   {# --- Publish request: only show when not active and owner is viewing --- #}
   {% if not website.is_active and user.profile == website.user %}
-    <button id="publishRequestBtn" class="publish-btn" aria-label="Request publish" title="Request publish">
+    <button id="publishRequestBtn" class="publish-btn" aria-label="Request publish" title="Request publish" aria-busy="false">
       <span class="label" aria-hidden="true">Request publish</span>
       <i class="fas fa-paper-plane" aria-hidden="true"></i>
     </button>
@@ -358,85 +393,160 @@
   </div>
 
   <!-- toast -->
-  <div id="toast" class="toast" role="status" aria-live="polite">Message sent — thanks! I'll get back to you shortly.</div>
+  <div id="toast" class="toast" role="status" aria-live="polite"><span id="toastIcon"></span><span id="toastText">Message sent — thanks! I'll get back to you shortly.</span></div>
 
   <script>
     /****************************
      * Helpers
      ****************************/
-    function showToast(message, timeout = 2500) {
-      const t = document.getElementById('toast');
-      if (!t) return;
-      t.textContent = message;
-      t.classList.add('show');
-      setTimeout(()=> t.classList.remove('show'), timeout);
-    }
-
-    /* Get CSRF token from cookie (Django default) */
     function getCookie(name) {
       const value = `; ${document.cookie}`;
       const parts = value.split(`; ${name}=`);
       if (parts.length === 2) return parts.pop().split(';').shift();
     }
 
+    // enhanced toast with types: 'success' | 'error' | 'info'
+    function showToast(message, type = 'info', timeout = 3000) {
+      const t = document.getElementById('toast');
+      const text = document.getElementById('toastText');
+      const icon = document.getElementById('toastIcon');
+      if (!t || !text || !icon) return;
+
+      // reset classes
+      t.classList.remove('success', 'error');
+      icon.innerHTML = '';
+
+      if (type === 'success') {
+        t.classList.add('success');
+        icon.innerHTML = '<i class="fas fa-check" aria-hidden="true"></i>';
+      } else if (type === 'error') {
+        t.classList.add('error');
+        icon.innerHTML = '<i class="fas fa-exclamation-triangle" aria-hidden="true"></i>';
+      } else {
+        icon.innerHTML = '<i class="fas fa-info-circle" aria-hidden="true"></i>';
+      }
+
+      text.textContent = message;
+      t.classList.add('show');
+
+      clearTimeout(t._hideTimeout);
+      t._hideTimeout = setTimeout(()=> {
+        t.classList.remove('show', 'success', 'error');
+        icon.innerHTML = '';
+      }, timeout);
+    }
+
     /****************************
-     * Publish request button behavior
-     * - Uses fetch POST to /{{website.unique_name}}/request_publish/
-     * - Includes CSRF token header (Django)
-     * - Shows toast on success/error
+     * Publish request button behavior (enhanced)
+     * - POSTs to Django url name 'website_publish'
+     * - adds loading state + global wait cursor
+     * - handles 403 forbidden specially (not-allowed + disabled)
+     * - uses color-coded toasts
      ****************************/
     (function setupPublishButton(){
       const btn = document.getElementById('publishRequestBtn');
       if (!btn) return;
 
-      btn.addEventListener('click', async () => {
-        // disable to prevent double-click
+      const publishUrl = "{% url 'website_publish' website.unique_name %}";
+      const csrftoken = getCookie('csrftoken');
+
+      // UI helpers
+      function enterLoading() {
+        btn.classList.add('loading');
+        btn.setAttribute('aria-busy', 'true');
+        // replace icon with spinner (keep label for hover)
+        btn._prevInner = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner spinner" aria-hidden="true"></i>';
+        // hint to user globally
+        document.documentElement.style.cursor = 'wait';
+        document.body.style.cursor = 'wait';
+      }
+      function exitLoading(prevHtml = null) {
+        btn.classList.remove('loading');
+        btn.setAttribute('aria-busy', 'false');
+        if (prevHtml !== null) btn.innerHTML = prevHtml;
+        // restore cursor
+        document.documentElement.style.cursor = '';
+        document.body.style.cursor = '';
+      }
+      function setForbiddenState() {
+        btn.classList.add('disabled');
         btn.disabled = true;
-        btn.style.opacity = '0.9';
+        btn.title = 'Not allowed';
+        btn.style.cursor = 'not-allowed';
+        btn.innerHTML = '<i class="fas fa-lock" aria-hidden="true"></i>';
+      }
 
-        const url = '/{{website.unique_name}}/publish/'; // expected backend endpoint
-        const csrftoken = getCookie('csrftoken');
-
+      async function sendPublishRequest() {
         try {
-          const res = await fetch(url, {
+          enterLoading();
+
+          const res = await fetch(publishUrl, {
             method: 'POST',
+            credentials: 'same-origin',
             headers: {
               'Content-Type': 'application/json',
               ...(csrftoken ? { 'X-CSRFToken': csrftoken } : {})
             },
-            body: JSON.stringify({ website_id: {{ website.id }} })
+            body: JSON.stringify({}) // your view doesn't need payload
           });
 
           if (res.ok) {
-            showToast('Publish request sent — thanks! Check your dashboard.');
-            // optionally change ui (disable or hide)
-            btn.style.opacity = '0.6';
+            // success
+            let data = {};
+            try { data = await res.json(); } catch (e) {}
+            const message = data && data.message ? data.message : 'Publish request sent — check your email/dashboard.';
+            showToast(message, 'success', 3500);
+
+            // friendly success UI
+            btn.innerHTML = '<i class="fas fa-check" aria-hidden="true"></i>';
             btn.title = 'Request sent';
+            btn.disabled = true;
+            btn.style.opacity = '0.75';
+            exitLoading(btn.innerHTML); // keep success icon
+          } else if (res.status === 403) {
+            // forbidden -> user not owner or not allowed
+            showToast('You are not allowed to publish this website.', 'error', 4500);
+            setForbiddenState();
+            exitLoading(btn._prevInner);
           } else {
-            // backend didn't respond OK
-            showToast('Could not send request — please try again or contact support.');
+            // other errors -> show server message if provided
+            let err = 'Could not send publish request — please try again later.';
+            try {
+              const j = await res.json();
+              if (j && (j.error || j.message)) err = j.error || j.message;
+            } catch(e){}
+            showToast(err, 'error', 4500);
             btn.disabled = false;
+            exitLoading(btn._prevInner);
           }
         } catch (err) {
-          // network / CORS / endpoint missing
-          console.error(err);
-          showToast('Request failed. If your backend has no endpoint yet, implement POST ' + url);
+          console.error('Publish request failed', err);
+          showToast('Network error. Could not send request.', 'error', 4500);
           btn.disabled = false;
+          exitLoading(btn._prevInner);
         }
+      }
+
+      btn.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        // avoid double activation
+        if (btn.disabled || btn.classList.contains('loading')) return;
+        // lightweight confirmation
+        if (!confirm('Send publish request for this website?')) return;
+        sendPublishRequest();
       });
     })();
 
 
     /****************************
      * float nav behavior
-     * - Use IntersectionObserver for each section so active state is stable and not single-pixel sensitive
      ****************************/
     (function setupFloatNav(){
       const icons = Array.from(document.querySelectorAll('.float-icon'));
       const map = {};
       icons.forEach(i => map[i.dataset.target] = i);
 
-      // click behavior (smooth)
       icons.forEach(icon => {
         icon.addEventListener('click', () => {
           const target = document.getElementById(icon.dataset.target) || document.querySelector('.' + icon.dataset.target);
@@ -448,21 +558,17 @@
         });
       });
 
-      // IntersectionObserver options tuned to center area of viewport
       const io = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
-          const id = entry.target.id || entry.target.className;
           const icon = map[entry.target.id];
           if (!icon) return;
           if (entry.isIntersecting) {
-            // set only this icon active
             icons.forEach(ic => ic.classList.remove('active'));
             icon.classList.add('active');
           }
         });
       }, { root: null, rootMargin: '-40% 0px -40% 0px', threshold: 0.01 });
 
-      // Observe each section that has an icon
       Object.keys(map).forEach(k => {
         const sec = document.getElementById(k) || document.querySelector('.' + k);
         if (sec) io.observe(sec);
@@ -471,19 +577,16 @@
 
 
     /****************************
-     * Progress bars animation on scroll (per-skill observer)
-     * - Observe each .skill individually so they animate reliably when entering viewport
+     * Progress bars animation on scroll (kept)
      ****************************/
     (function setupSkillObservers(){
       const skills = document.querySelectorAll('.skill');
       if (!skills || skills.length === 0) return;
 
-      // animate numeric counter
       function animateCount(elPercentNode, from, to, duration = 900) {
         const start = performance.now();
         function step(now) {
           const t = Math.min(1, (now - start) / duration);
-          // smooth easeOutCubic
           const eased = 1 - Math.pow(1 - t, 3);
           const current = Math.round(from + (to - from) * eased);
           elPercentNode.textContent = current + '%';
@@ -501,8 +604,6 @@
           if (!bar || bar.classList.contains('animated')) { obs.unobserve(skillEl); return; }
 
           const target = parseInt(bar.dataset.target || 0, 10);
-          // set width -> CSS transition handles smoothness
-          // small timeout to ensure layout flush for smoother animation on some browsers
           requestAnimationFrame(() => {
             bar.style.width = target + '%';
             bar.style.setProperty('--target-offset', target + '%');
@@ -510,14 +611,10 @@
             bar.classList.add('animated');
           });
 
-          // accessibility
           const progress = bar.closest('.progress');
           if (progress) progress.setAttribute('aria-valuenow', String(target));
-
-          // animate percent text
           const percentNode = skillEl.querySelector('.percent');
           animateCount(percentNode, 0, target, 700 + Math.round(target * 5));
-
           obs.unobserve(skillEl);
         });
       }, { threshold: 0.45 });
@@ -527,34 +624,32 @@
 
 
     /****************************
-     * Contact form behavior (kept and unchanged)
+     * Contact form behavior (kept)
      ****************************/
-    const contactForm = document.getElementById('contactForm');
-    const toast = document.getElementById('toast');
+    (function(){
+      const form=document.getElementById('contactForm'); if(!form) return;
+      const submitBtn=form.querySelector('.btn-send');
 
-    contactForm && contactForm.addEventListener('submit', (e) => {
-      e.preventDefault();
+      async function enterLoading(){if(submitBtn){submitBtn.disabled=true; submitBtn._prevHtml=submitBtn.innerHTML; submitBtn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Sending...'; submitBtn.style.cursor='wait';}document.documentElement.style.cursor='wait';document.body.style.cursor='wait';}
+      function exitLoading(){if(submitBtn){submitBtn.disabled=false; if(submitBtn._prevHtml)submitBtn.innerHTML=submitBtn._prevHtml; submitBtn.style.cursor='';}document.documentElement.style.cursor='';document.body.style.cursor='';}
 
-      const name = contactForm.querySelector('#name').value.trim();
-      const email = contactForm.querySelector('#email').value.trim();
-      const message = contactForm.querySelector('#message').value.trim();
-      if (!name || !email || !message) {
-        toast.textContent = 'Please complete all fields before sending.';
-        toast.classList.add('show');
-        setTimeout(()=> toast.classList.remove('show'), 2500);
-        return;
-      }
-
-      toast.textContent = 'Message sent — thanks! I\'ll get back to you shortly.';
-      toast.classList.add('show');
-
-      setTimeout(()=> {
-        toast.classList.remove('show');
-        contactForm.reset();
-      }, 1800);
-    });
+      form.addEventListener('submit',async e=>{
+        e.preventDefault();
+        const name=(form.querySelector('#name')?.value||'').trim();
+        const email=(form.querySelector('#email')?.value||'').trim();
+        const message=(form.querySelector('#message')?.value||'').trim();
+        if(!name||!email||!message){showToast('Please complete all fields.','error'); return;}
+        if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showToast('Please enter a valid email.','error'); return;}
+        const url="{% url 'website_contact' website.unique_name %}"; const csrftoken=getCookie('csrftoken');
+        try{
+          await enterLoading();
+          const res=await fetch(url,{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json', ...(csrftoken?{'X-CSRFToken':csrftoken}:{})},body:JSON.stringify({name,email,message})});
+          if(res.ok){let data={}; try{data=await res.json();}catch(e){} showToast(data.message||'Message sent — the owner will receive an email.','success'); form.reset();}
+          else {let info={message:'Failed to send message.'}; try{info=await res.json();}catch(e){} showToast(info.message||'Failed to send — try again later.','error');}
+        }catch(err){console.error(err); showToast('Network error — could not send.','error');}finally{exitLoading();}
+      });
+    })();
 
   </script>
-
 </body>
 </html>
