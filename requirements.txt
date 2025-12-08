@@ -14,3 +14,4 @@ requests
 urllib3
 django_markdown_deux
 django-widget-tweaks
+gunicorn
