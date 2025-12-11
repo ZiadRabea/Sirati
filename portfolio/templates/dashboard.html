@@ -71,11 +71,11 @@
 
       {% for code in yearly_codes %}
       <div class="flex items-center justify-between mb-4 p-4 rounded-2xl
-        {% if code.is_expired %} bg-red-100 text-red-700 {% else %} bg-green-100 text-green-700 {% endif %}">
+        {% if code.expired %} bg-red-100 text-red-700 {% else %} bg-green-100 text-green-700 {% endif %}">
         <div>
           <p class="font-semibold">{{ code.code }}</p>
           <p class="text-sm opacity-70">
-            Status: {% if code.is_expired %}Expired{% else %}Active{% endif %}
+            Status: {% if code.expired %}Expired{% else %}Active{% endif %}
           </p>
         </div>
       </div>
@@ -90,11 +90,11 @@
 
       {% for code in lifetime_codes %}
       <div class="flex items-center justify-between mb-4 p-4 rounded-2xl
-        {% if code.is_expired %} bg-red-100 text-red-700 {% else %} bg-green-100 text-green-700 {% endif %}">
+        {% if code.expired %} bg-red-100 text-red-700 {% else %} bg-green-100 text-green-700 {% endif %}">
         <div>
           <p class="font-semibold">{{ code.code }}</p>
           <p class="text-sm opacity-70">
-            Status: {% if code.is_expired %}Expired{% else %}Active{% endif %}
+            Status: {% if code.expired %}Expired{% else %}Active{% endif %}
           </p>
         </div>
       </div>
