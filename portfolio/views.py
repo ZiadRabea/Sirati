@@ -272,7 +272,7 @@ def publish_website(request, key):
     if code.plan == "Yearly" and not code.expired:
         website.is_active = True
         website.activation_deadline = timezone.now() + timedelta(days=365)
-        website.activation_deadline = timezone.now() + timedelta(days=365+15)
+        website.activation_margin = timezone.now() + timedelta(days=365+15)
         website.save()
         code.user.coins += 5
         code.user.save()
@@ -283,7 +283,7 @@ def publish_website(request, key):
     elif code.plan == "Monthly" and not code.expired:
         website.is_active = True
         website.activation_deadline = timezone.now() + timedelta(days=30)
-        website.activation_deadline = timezone.now() + timedelta(days=30+15)
+        website.activation_margin = timezone.now() + timedelta(days=30+15)
         website.save()
         code.user.coins += 5
         code.user.save()
@@ -292,10 +292,10 @@ def publish_website(request, key):
         messages.success(request, 'Portfolio activated successfully!')
         return redirect(f"/{website.unique_name}")
     
-    elif code.plan == "Monthly" and not code.expired:
+    elif code.plan == "Lifetime" and not code.expired:
         website.is_active = True
         website.activation_deadline = timezone.now() + timedelta(days=3650) #10 Years
-        website.activation_deadline = timezone.now() + timedelta(days=3650+15) #10 Years
+        website.activation_margin = timezone.now() + timedelta(days=3650+15) #10 Years
         website.save()
         code.user.coins += 5
         code.user.save()
