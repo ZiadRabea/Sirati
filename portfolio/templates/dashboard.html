@@ -131,10 +131,13 @@
 
   <!-- CLEAR EXPIRED BUTTON -->
   <div class="mt-8 max-w-lg mx-auto">
-    <a href="/admin_dashboard/clear" style="text-decoration: none; color: none;" name="clear_expired" value="1"
-      class="w-full py-4 bg-red-600 text-white text-lg rounded-2xl shadow-lg hover:bg-red-700 transition">
-      Clear All Expired Codes
-    </a>
+    <form>
+      {% csrf_token %}
+      <button type="button" onclick="window.open('/admin_dashboard/clear', '_self')" name="clear_expired" value="1"
+        class="w-full py-4 bg-red-600 text-white text-lg rounded-2xl shadow-lg hover:bg-red-700 transition">
+        Clear All Expired Codes
+      </button>
+    </form>
   </div>
 
 </section>
