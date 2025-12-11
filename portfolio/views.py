@@ -341,6 +341,16 @@ def admin_dashboard(request):
 
         return render(request, "dashboard.html", context)
 
+@login_required
+def clear_expired(request):
+    user = request.user
+    if not user.is_superuser:
+        return redirect('/error')
+    else:
+        keys = Key.objects.filter(user=user.profile, expired=True)
+        key.delete()
+        return redirect('/admin_dashboard')
+        
 @csrf_exempt
 @require_POST
 def contact_website(request, slug):

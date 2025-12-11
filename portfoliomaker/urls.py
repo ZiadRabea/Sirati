@@ -25,6 +25,7 @@ urlpatterns = [
     path('', home),
     path('error/', error),
     path('admin_dashboard/', admin_dashboard),
+    path('admin_dashboard/clear', clear_expired),
     path('publish/', publish),
     path('publish/<str:key>', publish_website, name='website_publish'),
     path('<str:slug>/contact/', contact_website, name='website_contact'),
