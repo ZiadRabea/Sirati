@@ -348,7 +348,7 @@ def clear_expired(request):
         return redirect('/error')
     else:
         keys = Key.objects.filter(user=user.profile, expired=True)
-        key.delete()
+        keys.delete()
         return redirect('/admin_dashboard')
 
 @csrf_exempt
