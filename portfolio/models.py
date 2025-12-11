@@ -1,6 +1,7 @@
 from django.db import models
 from Accounts.models import Profile
 from cloudinary_storage.storage import MediaCloudinaryStorage
+from django.contrib.postgres.fields import ArrayField
 from django.utils.crypto import get_random_string
 
 # Create your models here.
@@ -37,6 +38,8 @@ class Skill(models.Model):
 class Project(models.Model):
     title = models.CharField(max_length=100)
     about = models.TextField(max_length=2000)
+    tech = ArrayField(models.CharField(max_length=100), null=True, blank=True, default=list)
+    image =  models.ImageField(upload_to="profile_pictures", storage=MediaCloudinaryStorage, null=True, blank=True)
     website = models.ForeignKey(Website, on_delete=models.CASCADE)
 
 

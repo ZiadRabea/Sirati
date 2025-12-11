@@ -36,6 +36,7 @@ urlpatterns = [
     path('certificate/<int:id>/delete', delete_certificate),
     path('skills/<int:id>/delete', delete_skill),
     path('projects/<int:id>/delete', delete_project),
+    path('projects/<int:id>/edit', edit_project),
     path('<str:slug>/work', add_work),
     path('work/<int:id>/delete', delete_work),
     path('<str:slug>/edit', edit_info),

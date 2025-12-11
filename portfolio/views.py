@@ -179,7 +179,30 @@ def add_project(request, slug):
         }
         return render(request, "projects.html", context)
 
-
+@login_required
+def edit_project(request, id):
+    website = request.user.profile.website
+    project = Project.objects.get(id=id)
+    if not project.website == website:
+        return redirect("/error")
+    else:
+        projects = Project.objects.filter(website=website)
+        if request.method == "POST":
+            form = AddProject(request.POST, request.FILES, instance=project)
+            if form.is_valid():
+                myform = form.save(commit=False)
+                myform.website = website
+                myform.save()
+                return redirect(f"/{website.unique_name}")
+        else:
+            form = AddProject(instance=project)
+        context = {
+            "website": website,
+            "form": form,
+            "projects": projects
+        }
+        return render(request, "projects.html", context)
+    
 @login_required
 def delete_project(request, id):
     project = Project.objects.get(id=id)

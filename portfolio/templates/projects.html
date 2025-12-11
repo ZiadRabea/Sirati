@@ -1,5 +1,5 @@
 {% load static %}
-{%load widget_tweaks%}
+{% load widget_tweaks %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -32,7 +32,7 @@
 
 <body class="font-inter bg-gray-50 text-gray-800 antialiased">
 
-  <!-- NAVBAR (consistent with Sirati) -->
+  <!-- NAVBAR (same as before) -->
   <header class="fixed inset-x-0 top-0 z-50">
     <div class="backdrop-blur bg-white/60 shadow-sm border-b border-gray-100">
       <div class="max-w-6xl mx-auto px-6">
@@ -60,7 +60,6 @@
             <a href="/{{website.unique_name}}/edit" class="text-sm px-4 py-2 rounded-full hover:bg-gray-100 transition flex items-center gap-2 text-gray-700">
               <i class="fa fa-info-circle text-xs"></i> Edit Info
             </a>
-
 
             <a href="/{{website.unique_name}}/projects" class="text-sm px-4 py-2 rounded-full bg-white shadow-sm text-sirati-indigo font-semibold flex items-center gap-2">
               <i class="fa fa-briefcase text-xs"></i> Projects
@@ -123,27 +122,98 @@
           {{ form.about|add_class:"w-full rounded-xl border-gray-200 bg-gray-50 px-4 py-3 focus:ring-2 focus:ring-sirati-indigo focus:border-transparent h-28" }}
         </div>
 
+        <!-- Enhanced Image Picker (drag & drop + preview) -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Thumbnail (optional)</label>
+          <div class="text-sm text-gray-500 mb-2">Drag & drop an image here or click to pick. Preview appears immediately. Max size: 5 MB.</div>
+
+          <!-- If backend has form.image, render it but hidden (we'll use the same input programmatically) -->
+          {% if form.image %}
+            {% render_field form.image id="id_image" class="hidden" accept="image/*" %}
+          {% else %}
+            <input type="file" name="image" id="id_image" accept="image/*" class="hidden" />
+          {% endif %}
+
+          <div id="image-picker" class="relative cursor-pointer rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 p-4 flex items-center gap-4"
+               aria-describedby="image-help" tabindex="0">
+            <div class="flex-shrink-0 w-16 h-16 rounded-md bg-white flex items-center justify-center text-gray-300">
+              <i class="fa fa-image fa-2x"></i>
+            </div>
+
+            <div class="flex-1">
+              <div id="picker-instructions" class="text-sm font-medium text-gray-700">Click to choose or drag & drop an image</div>
+              <div id="picker-sub" class="text-xs text-gray-500 mt-1">PNG, JPG, GIF (up to 5 MB)</div>
+              <div id="image-meta" class="text-xs text-gray-500 mt-2 hidden"></div>
+            </div>
+
+            <div id="image-actions" class="flex items-center gap-2 hidden">
+              <button id="remove-image-btn" type="button" class="text-sm px-3 py-1 rounded-full border border-gray-200 bg-white text-gray-700 hover:bg-red-50">Remove</button>
+            </div>
+
+            <!-- preview -->
+            <div id="image-preview-wrap" class="absolute top-4 right-4 w-24 h-24 rounded-md overflow-hidden hidden">
+              <img id="image-preview" src="#" alt="Preview" class="w-full h-full object-cover block" />
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Technologies / keywords (ArrayField) -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Technologies / Keywords</label>
+          <div class="text-sm text-gray-500 mb-2">Type technologies and separate them with commas — they will turn into tags (like YouTube keywords or LinkedIn skills).</div>
+
+          {% if form.tech %}
+            {% render_field form.tech id="original-techs" class="hidden" %}
+          {% else %}
+            <input type="hidden" id="original-techs" name="tech" value="">
+          {% endif %}
+
+          <div class="mt-2">
+            <div id="tech-tags" class="flex flex-wrap gap-2"></div>
+            <input id="tech-input" type="text" placeholder="e.g. Django, React, PostgreSQL" autocomplete="off"
+                   class="mt-2 w-full rounded-xl border-gray-200 bg-white px-4 py-2 focus:ring-2 focus:ring-sirati-indigo focus:border-transparent" />
+          </div>
+        </div>
+
         <div class="flex items-center gap-3">
           <input type="submit" value="Add Project" class="bg-gradient-to-r from-sirati-indigo to-indigo-400 text-white px-6 py-3 rounded-full font-medium hover:from-indigo-600 hover:to-indigo-500 transition cursor-pointer shadow-md" />
           <a href="/{{website.unique_name}}/projects" class="text-sm text-gray-500 hover:underline">Refresh</a>
         </div>
       </form>
 
-      <!-- Projects list -->
+      <!-- Projects list (same as before, showing project.image and project.techs) -->
       <div class="mt-8 grid gap-4">
         {% for project in projects %}
           <div class="bg-gray-50 rounded-xl p-4 md:p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div class="flex-1">
-              <div class="text-lg font-semibold text-gray-800">{{ project.title }}</div>
-              {% if project.about %}
-                <div class="text-sm text-gray-600 mt-1">{{ project.about|truncatechars:160 }}</div>
+            <div class="flex items-start gap-4 flex-1">
+              {% if project.image %}
+                <img src="{{ project.image.url }}" alt="{{ project.title }}" class="w-20 h-20 rounded-lg object-cover shadow-sm" />
+              {% else %}
+                <div class="w-20 h-20 rounded-lg bg-gray-100 flex items-center justify-center text-gray-400">
+                  <i class="fa fa-image"></i>
+                </div>
               {% endif %}
+              <div>
+                <div class="text-lg font-semibold text-gray-800">{{ project.title }}</div>
+                {% if project.about %}
+                  <div class="text-sm text-gray-600 mt-1">{{ project.about|truncatechars:160 }}</div>
+                {% endif %}
+
+                {% if project.tech %}
+                  <div class="mt-3 flex flex-wrap gap-2">
+                    {% for tech in project.tech %}
+                      <span class="text-xs px-2 py-1 rounded-full bg-white border border-gray-200 text-gray-700">{{ tech }}</span>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+              </div>
             </div>
 
             <div class="flex items-center gap-3 mt-3 md:mt-0">
-              <!-- <a href="/projects/{{ project.id }}/edit" class="inline-flex items-center gap-2 text-sm px-3 py-2 rounded-full bg-white border border-gray-200 hover:bg-gray-100 transition shadow-sm">
+              <a href="/projects/{{ project.id }}/edit" class="inline-flex items-center gap-2 text-sm px-3 py-2 rounded-full bg-white border border-gray-200 hover:bg-gray-100 transition shadow-sm">
                 <i class="fa fa-pencil"></i> Edit
-              </a> -->
+              </a>
               <a href="/projects/{{ project.id }}/delete" onclick="return confirm('Are you sure you want to delete this project?');" class="inline-flex items-center gap-2 text-sm px-3 py-2 rounded-full bg-white border border-gray-200 text-red-600 hover:bg-red-50 transition shadow-sm">
                 <i class="fa fa-trash"></i> Delete
               </a>
@@ -156,7 +226,7 @@
     </div>
   </main>
 
-  <!-- Mobile nav + small JS -->
+  <!-- Mobile nav + JS -->
   <script>
     // Mobile nav toggle
     const mobileBtn = document.getElementById('mobileNavBtn');
@@ -170,6 +240,213 @@
         closeIcon.classList.toggle('hidden');
       });
     }
+
+    // ---------- Tech tags UI (unchanged) ----------
+    (function() {
+      const hiddenInput = document.getElementById('original-techs');
+      const tagContainer = document.getElementById('tech-tags');
+      const textInput = document.getElementById('tech-input');
+      const form = document.getElementById('add-project-form');
+
+      let tags = [];
+
+      function createTagElement(tagText, index) {
+        const el = document.createElement('span');
+        el.className = 'flex items-center gap-2 text-xs px-2 py-1 rounded-full bg-white border border-gray-200 text-gray-700';
+        el.innerHTML = `<span>${tagText}</span><button type="button" data-index="${index}" aria-label="Remove ${tagText}" class="ml-2 text-gray-400 hover:text-gray-600">&times;</button>`;
+        el.querySelector('button').addEventListener('click', (e) => {
+          const idx = parseInt(e.currentTarget.getAttribute('data-index'), 10);
+          removeTag(idx);
+        });
+        return el;
+      }
+
+      function renderTags() {
+        tagContainer.innerHTML = '';
+        tags.forEach((t, i) => {
+          tagContainer.appendChild(createTagElement(t, i));
+        });
+      }
+
+      function addTag(t) {
+        const trimmed = t.trim();
+        if (!trimmed) return;
+        const lower = trimmed.toLowerCase();
+        if (tags.some(x => x.toLowerCase() === lower)) return;
+        tags.push(trimmed);
+        renderTags();
+      }
+
+      function removeTag(idx) {
+        if (idx >= 0 && idx < tags.length) {
+          tags.splice(idx, 1);
+          renderTags();
+        }
+      }
+
+      function initFromHidden() {
+        if (!hiddenInput) return;
+        let val = hiddenInput.value || '';
+        val = val.trim();
+        if (!val) return;
+        try {
+          if (val.startsWith('[')) {
+            const parsed = JSON.parse(val);
+            if (Array.isArray(parsed)) {
+              parsed.forEach(p => addTag(String(p)));
+              return;
+            }
+          }
+        } catch (e) { /* ignore */ }
+        val.split(',').forEach(s => addTag(s));
+      }
+
+      textInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ',') {
+          e.preventDefault();
+          const value = textInput.value;
+          if (!value) return;
+          value.split(',').forEach(part => addTag(part));
+          textInput.value = '';
+        }
+        if (e.key === 'Backspace' && textInput.value === '') {
+          removeTag(tags.length - 1);
+        }
+      });
+
+      textInput.addEventListener('paste', (e) => {
+        e.preventDefault();
+        const paste = (e.clipboardData || window.clipboardData).getData('text');
+        if (!paste) return;
+        paste.split(',').forEach(p => addTag(p));
+      });
+
+      if (form) {
+        form.addEventListener('submit', (e) => {
+          if (!hiddenInput) return;
+          hiddenInput.value = tags.join(',');
+        });
+      }
+
+      initFromHidden();
+    })();
+
+    // ---------- Enhanced image picker + preview ----------
+    (function() {
+      const fileInput = document.getElementById('id_image');
+      const picker = document.getElementById('image-picker');
+      const previewWrap = document.getElementById('image-preview-wrap');
+      const previewImg = document.getElementById('image-preview');
+      const removeBtn = document.getElementById('remove-image-btn');
+      const meta = document.getElementById('image-meta');
+      const actions = document.getElementById('image-actions');
+      const instructions = document.getElementById('picker-instructions');
+      const maxFileSize = 5 * 1024 * 1024; // 5 MB, change as needed
+      const allowedTypes = ['image/png', 'image/jpeg', 'image/gif', 'image/webp'];
+
+      if (!fileInput || !picker) return;
+
+      // click on picker triggers file input
+      picker.addEventListener('click', () => fileInput.click());
+      picker.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          fileInput.click();
+        }
+      });
+
+      // drag & drop
+      ['dragenter','dragover'].forEach(evt => {
+        picker.addEventListener(evt, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          picker.classList.add('border-sirati-indigo', 'bg-white');
+        });
+      });
+      ['dragleave','drop'].forEach(evt => {
+        picker.addEventListener(evt, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          picker.classList.remove('border-sirati-indigo', 'bg-white');
+        });
+      });
+
+      picker.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        if (!dt || !dt.files || dt.files.length === 0) return;
+        fileInput.files = dt.files; // assign dropped files to the same input
+        handleFiles(fileInput.files);
+      });
+
+      fileInput.addEventListener('change', (e) => {
+        handleFiles(fileInput.files);
+      });
+
+      removeBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        clearSelection();
+      });
+
+      function showError(msg) {
+        meta.textContent = msg;
+        meta.classList.remove('text-gray-500');
+        meta.classList.add('text-red-600');
+        meta.hidden = false;
+      }
+
+      function clearMetaError() {
+        meta.classList.remove('text-red-600');
+        meta.classList.add('text-gray-500');
+      }
+
+      function handleFiles(files) {
+        clearMetaError();
+        if (!files || files.length === 0) {
+          clearSelection();
+          return;
+        }
+        const file = files[0];
+        // validate type
+        if (allowedTypes.length && !allowedTypes.includes(file.type)) {
+          showError('Invalid file type. Allowed: PNG, JPG, GIF, WEBP.');
+          fileInput.value = '';
+          return;
+        }
+        // validate size
+        if (file.size > maxFileSize) {
+          showError('File too large — max 5 MB.');
+          fileInput.value = '';
+          return;
+        }
+
+        // show meta
+        meta.textContent = `${file.name} • ${(file.size/1024|0)} KB`;
+        meta.hidden = false;
+        actions.classList.remove('hidden');
+        document.getElementById('image-meta').classList.remove('hidden');
+
+        // preview
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          previewImg.src = e.target.result;
+          previewWrap.classList.remove('hidden');
+        };
+        reader.readAsDataURL(file);
+      }
+
+      function clearSelection() {
+        fileInput.value = '';
+        previewImg.src = '#';
+        previewWrap.classList.add('hidden');
+        actions.classList.add('hidden');
+        meta.textContent = '';
+        meta.hidden = true;
+        clearMetaError();
+      }
+
+      // If the form is submitted without selecting a file, nothing to do — backend treats image as optional.
+      // If you want to show current project image (on edit flows), you'd pre-populate preview by setting previewImg.src server-side in an edit template.
+    })();
   </script>
 </body>
 </html>

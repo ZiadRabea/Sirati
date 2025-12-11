@@ -38,8 +38,31 @@
     .milestone::before { content:""; width:18px;height:18px;background:#fff;border-radius:50%;position:absolute;left:-40px;top:0; box-shadow: 0 0 10px rgba(255,255,255,0.03); }
 
     .projects { display:grid; grid-template-columns: repeat(auto-fit,minmax(320px,1fr)); gap:25px; width:90%; margin: auto; }
-    .project-card { background:#141414; border:1px solid #333; padding:20px; border-radius:14px; transition: transform .2s ease, box-shadow .2s ease; }
+    .project-card { background:#141414; border:1px solid #333; padding:20px; border-radius:14px; transition: transform .2s ease, box-shadow .2s ease; display:flex; gap:14px; align-items:flex-start; }
     .project-card:hover { transform: scale(1.02); box-shadow: 0 0 30px rgba(255,255,255,0.04); }
+    .project-body { flex:1 1 auto; }
+    .project-image { width:110px; height:110px; border-radius:10px; object-fit:cover; flex-shrink:0; border:1px solid rgba(255,255,255,0.04); background:linear-gradient(180deg,#0e0e0e,#151515); display:block; }
+    .project-title { font-weight:700; font-size:1.05rem; margin-bottom:6px; color:#fff; }
+    .project-about { color:#cfcfcf; font-size:0.95rem; margin-bottom:10px; line-height:1.45; max-height:4.35rem; overflow:hidden; text-overflow:ellipsis; }
+
+    /* tech chips */
+    .tech-list { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; align-items:center; }
+    .tech-chip {
+      font-size:0.82rem;
+      padding:6px 9px;
+      border-radius:999px;
+      background: linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      border:1px solid rgba(255,255,255,0.04);
+      color:#e7e7e7;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      white-space:nowrap;
+      max-width:100%;
+    }
+    .tech-chip i { opacity:0.9; font-size:0.78rem; color:#bdbdbd; }
+
+    .project-meta { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-top:10px; color:#bfbfbf; font-size:0.9rem; }
 
     .cta { text-align:center; margin:80px 0 120px; }
 
@@ -107,8 +130,19 @@
     .bar-filled::before { transform: translateX(calc(-1 * (100% - var(--target-offset, 100%)))); }
 
     /* ---------------------------
-       Contact form (elegant)
+       About / Contact block additions
        --------------------------- */
+    .about-wrap { width:90%; margin: 36px auto; max-width:900px; display:flex; gap:18px; align-items:flex-start; }
+    .about-card { background:#111; border:1px solid rgba(255,255,255,0.04); padding:18px; border-radius:12px; display:flex; gap:14px; align-items:flex-start; width:100%; }
+    .about-left { width:120px; display:flex; flex-direction:column; align-items:center; gap:8px; }
+    .about-avatar { width:96px; height:96px; border-radius:12px; object-fit:cover; border:1px solid rgba(255,255,255,0.04); }
+    .about-right { flex:1; }
+    .bio-text { color:#dcdcdc; line-height:1.5; margin-bottom:10px; }
+    .about-meta { display:flex; gap:14px; align-items:center; color:#bfbfbf; font-size:0.95rem; flex-wrap:wrap; }
+    .meta-item { display:inline-flex; gap:8px; align-items:center; background: rgba(255,255,255,0.02); padding:8px 10px; border-radius:999px; border:1px solid rgba(255,255,255,0.03); }
+    .meta-item a { color:inherit; text-decoration:none; font-weight:600; }
+
+    /* Contact card (kept) */
     .contact-card {
       width: min(720px, 92%);
       margin: 0 auto;
@@ -276,6 +310,10 @@
 
       /* Reposition publish button a bit higher to avoid overlapping footers/CTA */
       .publish-btn { bottom: 110px; right: 18px; }
+
+      .about-wrap { flex-direction:column; gap:12px; }
+      .project-card { flex-direction:column; align-items:stretch; }
+      .project-image { width:100%; height:180px; border-radius:10px; }
     }
     /* ---------------------------
    Flash Messages
@@ -380,7 +418,7 @@
   {% endif %}
 
   <section id="hero" class="hero">
-    <img src="{{website.profile_pic.url}}" alt="Profile photo of Ziad Rabea">
+    <img src="{{website.profile_pic.url}}" alt="Profile photo of {{ website.full_name }}">
     <h1>{{website.full_name}}</h1>
     <p>{{website.current_job}}</p>
     <a href="{{website.cv_url}}" download>Download CV</a>
@@ -388,6 +426,54 @@
       <a href="/{{website.unique_name}}/edit">Update Info<i class="fas fa-brush"></i></a>
     {% endif %}
   </section>
+
+  {# New: About block (bio, age, email) #}
+  <div class="about-wrap">
+    <div class="about-card" role="region" aria-label="About the portfolio holder" data-birthdate="{% if website.birth_date %}{{ website.birth_date|date:'Y-m-d' }}{% endif %}">
+      <div class="about-left">
+        {% if website.profile_pic %}
+          <img class="about-avatar" src="{{ website.profile_pic.url }}" alt="Avatar of {{ website.full_name }}">
+        {% else %}
+          <div class="about-avatar" aria-hidden="true" style="display:flex;align-items:center;justify-content:center;color:#bdbdbd;background:#0f0f0f;font-weight:700;">{{ website.full_name|default:''|slice:":1" }}</div>
+        {% endif %}
+        <div style="font-size:0.9rem;color:#cfcfcf;text-align:center;">{{ website.location|default:"" }}</div>
+      </div>
+
+      <div class="about-right">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
+          <h2 style="margin:0;font-size:1.25rem;">About</h2>
+          {% if user.profile == website.user %}
+            <a href="/{{website.unique_name}}/edit" style="text-decoration:none;color:#bfbfbf;font-size:0.9rem;"><i class="fas fa-edit"></i> Edit</a>
+          {% endif %}
+        </div>
+
+        <p class="bio-text">{{ website.about|default:"This person hasn't added a bio yet." }}</p>
+
+        <div class="about-meta" aria-hidden="false">
+          <div class="meta-item" title="Age">
+            <i class="fas fa-birthday-cake" aria-hidden="true"></i>
+            <span id="computed-age">{% if website.age %}{{ website.age }}{% else %}—{% endif %}</span>
+          </div>
+
+          <div class="meta-item" title="Contact email">
+            <i class="fas fa-envelope" aria-hidden="true"></i>
+            {% if website.email %}
+              <a href="mailto:{{ website.email }}" id="owner-email">{{ website.email }}</a>
+            {% else %}
+              <span id="owner-email">—</span>
+            {% endif %}
+          </div>
+
+          {% if website.website_url %}
+            <div class="meta-item" title="Website">
+              <i class="fas fa-link" aria-hidden="true"></i>
+              <a href="{{ website.website_url }}" target="_blank" rel="noopener noreferrer">{{ website.website_url|cut:'https://'|cut:'http://' }}</a>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div class="section-title">What I Do</div>
   <section id="services" class="services">
@@ -428,7 +514,40 @@
   <div class="section-title">Projects</div>
   <section id="projects" class="projects">
     {% for project in website.project_set.all %}
-      <div class="project-card"><strong>{{project.title}}</strong><br><br>{{project.about}}</div>
+      <div class="project-card" data-tech="{{ project.tech|default:'[]'|escapejs }}">
+        {% if project.image %}
+          <img class="project-image" src="{{ project.image.url }}" alt="Image for {{ project.title }}">
+        {% else %}
+          <div style="width:110px;height:110px;border-radius:10px;background:linear-gradient(180deg,#0e0e0e,#151515);display:flex;align-items:center;justify-content:center;color:#8f8f8f;font-weight:600;border:1px solid rgba(255,255,255,0.02);">
+            <i class="fas fa-folder-open" aria-hidden="true"></i>
+          </div>
+        {% endif %}
+        <div class="project-body">
+          <div class="project-title">{{ project.title }}</div>
+          <div class="project-about">{{ project.about|truncatechars:240 }}</div>
+
+          <div class="project-meta">
+            {% if project.url %}
+              <a href="{{ project.url }}" class="meta-link" target="_blank" rel="noopener noreferrer"><i class="fas fa-external-link-alt"></i> Visit</a>
+            {% endif %}
+            {% if project.year %}
+              <span>{{ project.year }}</span>
+            {% endif %}
+          </div>
+
+          <div class="tech-list" aria-label="Technologies used">
+            {# Server-side rendering if project.tech is iterable (most common case) #}
+            {% if project.tech %}
+              {% if project.tech|length and project.tech.0 %}
+                {% for tech in project.tech %}
+                  <span class="tech-chip"><i class="fas fa-tag" aria-hidden="true"></i>{{ tech }}</span>
+                {% endfor %}
+              {% endif %}
+            {% endif %}
+            {# JS will fill in missing chips if necessary #}
+          </div>
+        </div>
+      </div>
     {% endfor %}
     {% if user.profile == website.user %}
       <a style="text-decoration: none; color: whitesmoke;" href="/{{website.unique_name}}/projects" class="project-card"><strong>+ Add Project</strong><br><br>Create a new project</a>
@@ -636,6 +755,80 @@
           else {let info={message:'Failed to send message.'}; try{info=await res.json();}catch(e){} showToast(info.message||'Failed to send — try again later.','error');}
         }catch(err){console.error(err); showToast('Network error — could not send.','error');}finally{exitLoading();}
       });
+    })();
+
+    /****************************
+     * Compute age client-side (if birth_date exists)
+     ****************************/
+    (function computeAge() {
+      try {
+        const aboutCard = document.querySelector('.about-card');
+        if (!aboutCard) return;
+        const dob = aboutCard.dataset.birthdate; // expected 'YYYY-MM-DD' or empty
+        const ageNode = document.getElementById('computed-age');
+        if (!dob || !ageNode) return;
+
+        const parts = dob.split('-').map(Number);
+        if (parts.length !== 3) return;
+        const [y, m, d] = parts;
+        const today = new Date();
+        let age = today.getFullYear() - y;
+        const hasHadBirthdayThisYear = (today.getMonth() + 1) > m || ((today.getMonth() + 1) === m && today.getDate() >= d);
+        if (!hasHadBirthdayThisYear) age = age - 1;
+        if (Number.isFinite(age) && age >= 0) {
+          ageNode.textContent = age + ' years';
+        } else {
+          // fallback if website.age provided server-side already
+          if (ageNode.textContent.trim() === '—' && typeof window.siteOwnerAge !== 'undefined') {
+            ageNode.textContent = window.siteOwnerAge + ' years';
+          }
+        }
+      } catch (e) { /* silent */ }
+    })();
+
+    /****************************
+     * Render tech chips if dataset present or fallback parsing
+     ****************************/
+    (function renderTechChips() {
+      try {
+        const cards = document.querySelectorAll('.project-card');
+        cards.forEach(card => {
+          const listNode = card.querySelector('.tech-list');
+          // if server-side already rendered chips, skip
+          if (!listNode) return;
+          const existingChips = listNode.querySelectorAll('.tech-chip');
+          if (existingChips && existingChips.length > 0) return;
+
+          const raw = card.dataset.tech || '[]';
+          let techArr = [];
+          // try parse JSON (expected common case)
+          try {
+            techArr = JSON.parse(raw);
+            if (!Array.isArray(techArr)) techArr = [];
+          } catch (err) {
+            // fallback: try to parse a Python-list-like string "['React', 'Django']" or comma-separated
+            const cleaned = raw.replace(/^\[|\]$/g, '').trim();
+            if (cleaned.indexOf("'") >= 0 || cleaned.indexOf('"') >= 0) {
+              // split on commas but strip quotes
+              techArr = cleaned.split(',').map(s => s.replace(/['"]/g, '').trim()).filter(Boolean);
+            } else if (cleaned.indexOf(',') >= 0) {
+              techArr = cleaned.split(',').map(s => s.trim()).filter(Boolean);
+            } else if (cleaned.length > 0) {
+              techArr = [cleaned];
+            } else {
+              techArr = [];
+            }
+          }
+
+          // create chips
+          techArr.slice(0, 12).forEach(t => {
+            const span = document.createElement('span');
+            span.className = 'tech-chip';
+            span.innerHTML = `<i class="fas fa-tag" aria-hidden="true"></i>${t}`;
+            listNode.appendChild(span);
+          });
+        });
+      } catch (e) { console.error(e); }
     })();
 
   </script>
