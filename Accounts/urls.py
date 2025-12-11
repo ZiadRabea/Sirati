@@ -4,5 +4,5 @@ urlpatterns = [
     path('sign_up/', sign_up),
     path('profile/<int:id>/', profile),
     path('profile/<int:id>/', profile),
-    path('profile/<int:id>/sign_up', invite),
+    path('sign_up/<str:coupon>', invite),
     ]

@@ -1,0 +1,146 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard — Sirati</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .font-playfair { font-family: 'Playfair Display', serif; }
+  </style>
+</head>
+
+<body class="bg-gray-100 text-gray-800">
+
+<!-- ADMIN NAV -->
+<header class="w-full py-6 bg-white shadow z-50">
+  <div class="container mx-auto px-6 flex justify-between items-center">
+
+    <h1 class="text-2xl font-bold text-indigo-600">Admin Dashboard</h1>
+
+    <div class="flex items-center gap-6">
+
+      <!-- USER COINS BALANCE -->
+      <div class="px-5 py-2 bg-indigo-100 text-indigo-700 font-semibold rounded-full shadow">
+        EGP {{ user.profile.coins }}
+      </div>
+
+      <a href="/" class="px-5 py-2 bg-gray-200 rounded-full hover:bg-gray-300 transition">
+        Exit
+      </a>
+
+    </div>
+  </div>
+</header>
+
+<section class="pt-28 pb-20 container mx-auto px-6">
+
+  <h2 class="text-4xl font-playfair font-bold text-gray-900 mb-10">
+    Activation Codes
+  </h2>
+
+  <!-- Cards Layout -->
+  <div class="grid md:grid-cols-3 gap-12">
+
+    <!-- MONTHLY -->
+    <div class="bg-white p-8 rounded-3xl shadow-lg">
+      <h3 class="text-2xl font-semibold mb-6 text-indigo-600">Monthly Plans</h3>
+
+      {% for code in monthly_codes %}
+      <div class="flex items-center justify-between mb-4 p-4 rounded-2xl
+        {% if code.expired %} bg-red-100 text-red-700 {% else %} bg-green-100 text-green-700 {% endif %}">
+        <div>
+          <p class="font-semibold">{{ code.code }}</p>
+          <p class="text-sm opacity-70">
+            Status: {% if code.expired %}Expired{% else %}Active{% endif %}
+          </p>
+        </div>
+      </div>
+      {% empty %}
+      <p class="text-gray-500">No monthly codes.</p>
+      {% endfor %}
+    </div>
+
+    <!-- YEARLY -->
+    <div class="bg-white p-8 rounded-3xl shadow-lg">
+      <h3 class="text-2xl font-semibold mb-6 text-indigo-600">Yearly Plans</h3>
+
+      {% for code in yearly_codes %}
+      <div class="flex items-center justify-between mb-4 p-4 rounded-2xl
+        {% if code.is_expired %} bg-red-100 text-red-700 {% else %} bg-green-100 text-green-700 {% endif %}">
+        <div>
+          <p class="font-semibold">{{ code.code }}</p>
+          <p class="text-sm opacity-70">
+            Status: {% if code.is_expired %}Expired{% else %}Active{% endif %}
+          </p>
+        </div>
+      </div>
+      {% empty %}
+      <p class="text-gray-500">No yearly codes.</p>
+      {% endfor %}
+    </div>
+
+    <!-- LIFETIME -->
+    <div class="bg-white p-8 rounded-3xl shadow-lg">
+      <h3 class="text-2xl font-semibold mb-6 text-indigo-600">Lifetime / 10 Years</h3>
+
+      {% for code in lifetime_codes %}
+      <div class="flex items-center justify-between mb-4 p-4 rounded-2xl
+        {% if code.is_expired %} bg-red-100 text-red-700 {% else %} bg-green-100 text-green-700 {% endif %}">
+        <div>
+          <p class="font-semibold">{{ code.code }}</p>
+          <p class="text-sm opacity-70">
+            Status: {% if code.is_expired %}Expired{% else %}Active{% endif %}
+          </p>
+        </div>
+      </div>
+      {% empty %}
+      <p class="text-gray-500">No lifetime codes.</p>
+      {% endfor %}
+    </div>
+
+  </div>
+
+  <!-- GENERATE NEW CODE FORM -->
+  <div class="mt-12 bg-white p-8 rounded-3xl shadow-lg max-w-lg mx-auto">
+    <h3 class="text-2xl font-semibold mb-6 text-indigo-600">Generate New Code</h3>
+
+    <form method="POST" class="space-y-4" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div>
+        <label for="plan" class="block text-gray-700 font-medium mb-2">Select Plan</label>
+        <select id="plan" name="plan" required
+          class="w-full px-4 py-3 rounded-2xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-lg">
+          <option value="">-- Choose Plan --</option>
+          <option value="Monthly">Monthly</option>
+          <option value="Yearly">Yearly</option>
+          <option value="Lifetime">10 Years</option>
+        </select>
+      </div>
+
+      <button type="submit"
+        class="w-full py-4 bg-indigo-600 text-white text-lg rounded-2xl shadow-lg hover:bg-indigo-700 transition">
+        Generate Code
+      </button>
+    </form>
+  </div>
+
+  <!-- CLEAR EXPIRED BUTTON -->
+  <div class="mt-8 max-w-lg mx-auto">
+    <form method="POST">
+      {% csrf_token %}
+      <button type="submit" name="clear_expired" value="1"
+        class="w-full py-4 bg-red-600 text-white text-lg rounded-2xl shadow-lg hover:bg-red-700 transition">
+        Clear All Expired Codes
+      </button>
+    </form>
+  </div>
+
+</section>
+
+</body>
+</html>

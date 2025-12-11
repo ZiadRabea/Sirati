@@ -31,8 +31,7 @@ def profile(request, id):
     return render(request, "pages/Profile.html", context)
 
 
-def invite(request, id):
-    p = Profile.objects.get(id=id)
+def invite(request, coupon):
     if request.method == 'POST':
         Form = SignUP(request.POST)
         if Form.is_valid():
@@ -42,9 +41,8 @@ def invite(request, id):
             user = authenticate(username=username, password=password)
             login(request, user)
             u = request.user.profile
-            p.invited.add(u)
-            #p.coins += 0.1
-            p.save()
+            u.invited = f"{coupon}"
+            u.save()
             return redirect(f'/')
     else:
         Form = SignUP()

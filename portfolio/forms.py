@@ -40,3 +40,9 @@ class EditWebsite(ModelForm):
         model = Website
         fields = '__all__'
         exclude = ['unique_name', 'full_name', 'age', 'is_active']
+
+class Create_Key(ModelForm):
+    class Meta:
+        model = Key
+        fields = ["plan"]
+    

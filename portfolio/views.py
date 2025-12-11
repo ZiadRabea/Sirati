@@ -1,9 +1,9 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
-from django.shortcuts import get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse, HttpResponseForbidden, HttpResponseBadRequest
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.decorators.http import require_POST
+from django.contrib import messages
 from django.core.mail import EmailMessage
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
@@ -105,6 +105,8 @@ def display(request, slug):
     try:
         if website.is_active or website.user == request.user.profile:
             return render(request, "portfolio.html", context)
+        else:
+            return redirect('/error')
     except:
         return redirect('/error')
 
@@ -259,68 +261,85 @@ def delete_website(request, slug):
 
 
 @login_required
-@require_POST
-def publish_website(request, slug):
-    website = get_object_or_404(Website, unique_name=slug)
+def publish_website(request, key):
+    try: 
+        code = Key.objects.get(code=key) 
+    except: 
+        return redirect('/error')
 
-    # ensure user owns the site
-    if request.user.profile != website.user:
-        return HttpResponseForbidden('Not allowed')
+    website = request.user.profile.website
+    
+    if code.plan == "Yearly" and not code.expired:
+        website.is_active = True
+        website.activation_deadline = timezone.now() + timedelta(days=365)
+        website.activation_deadline = timezone.now() + timedelta(days=365+15)
+        website.save()
+        code.user.coins += 5
+        code.user.save()
+        code.expired = True
+        code.save()
+        messages.success(request, 'Portfolio activated successfully!')
+        return redirect(f"/{website.unique_name}")
+    elif code.plan == "Monthly" and not code.expired:
+        website.is_active = True
+        website.activation_deadline = timezone.now() + timedelta(days=30)
+        website.activation_deadline = timezone.now() + timedelta(days=30+15)
+        website.save()
+        code.user.coins += 5
+        code.user.save()
+        code.expired = True
+        code.save()
+        messages.success(request, 'Portfolio activated successfully!')
+        return redirect(f"/{website.unique_name}")
+    
+    elif code.plan == "Monthly" and not code.expired:
+        website.is_active = True
+        website.activation_deadline = timezone.now() + timedelta(days=3650) #10 Years
+        website.activation_deadline = timezone.now() + timedelta(days=3650+15) #10 Years
+        website.save()
+        code.user.coins += 5
+        code.user.save()
+        code.expired = True
+        code.save()
+        messages.success(request, 'Portfolio activated successfully!')
+        return redirect(f"/{website.unique_name}")
+    else:
+        return redirect("/error")
+    
+@login_required
+def publish(request):
+    return render(request, "activate.html")
 
-    # compose email
-    subject = f"Publish request for site: {website.full_name or website.unique_name}"
-    body_lines = [
-        f"User: {request.user.get_full_name() or request.user.username} <{request.user.email}>",
-        f"Website: {website.unique_name}",
-        f"Display name: {website.full_name or '—'}",
-        f"Requested plan: trial_7",
-        "",
-        "To approve this request, visit the admin dashboard or use your internal workflow.",
-    ]
-    message = "\n".join(body_lines)
+@login_required
+def admin_dashboard(request):
+    user = request.user.profile
+    if not request.user.is_superuser:
+        return redirect("/error")
+    else:
+        yearly_codes = Key.objects.filter(plan="Yearly", user=user)
+        monthly_codes = Key.objects.filter(plan="Monthly", user=user)
+        lifetime_codes = Key.objects.filter(plan="Lifetime", user=user)
 
-    from_email = getattr(settings, "DEFAULT_FROM_EMAIL", None) or "no-reply@yourdomain.com"
+        if request.method == "POST":
+            form = Create_Key(request.POST, request.FILES)
+            print("received post")
+            print(form.errors)
+            if form.is_valid():
+                print("form is valid")
+                myform = form.save(commit=False)
+                myform.user = request.user.profile
+                myform.save()
+        else:
+            form = Create_Key()
+        
+        context = {
+            "yearly_codes": yearly_codes,
+            "monthly_codes": monthly_codes,
+            "lifetime_codes": lifetime_codes,
+            "form": form,
+        }
 
-    try:
-        # send a confirmation/receipt to the requester (so "you" get the email)
-        if request.user.email:
-            send_mail(
-                subject=subject,
-                message=(
-                    f"Thanks — we've received your publish request.\n\n"
-                    f"{message}\n\n"
-                    "We'll review and get back to you shortly."
-                ),
-                from_email=from_email,
-                recipient_list=[request.user.email],
-                fail_silently=False,
-            )
-
-        # also notify site admins (optional — uses ADMINS from settings)
-        try:
-            send_mail(
-                subject="New Publish Request",
-                message=(
-                    f"Publish Request {website.unique_name} by {request.user.email}"
-                ),
-                from_email=from_email,
-                recipient_list=["ziadrabeay1@gmail.com"],
-                fail_silently=True,
-            )
-        except Exception:
-            # mail_admins may raise if ADMINS not configured; swallow but log
-            logger.exception("mail_admins failed for publish request")
-
-        return JsonResponse({
-            "status": "ok",
-            "message": "Publish request sent. A confirmation email has been delivered."
-        })
-    except BadHeaderError:
-        logger.exception("BadHeaderError sending publish email")
-        return JsonResponse({"status": "error", "message": "Invalid header in email."}, status=500)
-    except Exception:
-        logger.exception("Failed to send publish request email")
-        return JsonResponse({"status": "error", "message": "Failed to send email. Please try again later."}, status=500)
+        return render(request, "dashboard.html", context)
 
 @csrf_exempt
 @require_POST

@@ -277,16 +277,106 @@
       /* Reposition publish button a bit higher to avoid overlapping footers/CTA */
       .publish-btn { bottom: 110px; right: 18px; }
     }
+    /* ---------------------------
+   Flash Messages
+    --------------------------- */
+    #flash-container {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 99999;
+      width: min(420px, 90%);
+    }
+
+    .flash-message {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 18px;
+      border-radius: 12px;
+      background: #111;
+      border: 1px solid rgba(255,255,255,0.1);
+      backdrop-filter: blur(6px);
+      font-size: 0.95rem;
+      animation: flashSlide 0.45s cubic-bezier(.2,.9,.2,1);
+      box-shadow: 0 8px 28px rgba(0,0,0,0.55);
+      opacity: 0.95;
+    }
+
+    /* success */
+    .flash-message.success {
+      border-color: rgba(34,197,94,0.25);
+      background: linear-gradient(180deg,#052e14,#0c4d2b);
+      color: #d4fbe4;
+    }
+    /* error */
+    .flash-message.error {
+      border-color: rgba(239,68,68,0.25);
+      background: linear-gradient(180deg,#2b0404,#5a0808);
+      color: #ffe4e4;
+    }
+    /* warning */
+    .flash-message.warning {
+      border-color: rgba(255,165,0,0.35);
+      background: linear-gradient(180deg,#332103,#5a3a07);
+      color: #fff3d6;
+    }
+    /* info */
+    .flash-message.info {
+      border-color: rgba(124,92,255,0.3);
+      background: linear-gradient(180deg,#0b0b0b,#141020);
+      color: #e8e7ff;
+    }
+
+    .flash-icon i {
+      font-size: 18px;
+    }
+
+    /* animation */
+    @keyframes flashSlide {
+      from {
+        transform: translateY(-20px) scale(0.97);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+    }
 
   </style>
 </head>
 <body>
+    {% if messages %}
+  <div id="flash-container">
+    {% for message in messages %}
+      <div class="flash-message {{ message.tags }}">
+        <span class="flash-icon">
+          {% if message.tags == "success" %}
+            <i class="fas fa-check-circle"></i>
+          {% elif message.tags == "error" %}
+            <i class="fas fa-times-circle"></i>
+          {% elif message.tags == "warning" %}
+            <i class="fas fa-exclamation-triangle"></i>
+          {% else %}
+            <i class="fas fa-info-circle"></i>
+          {% endif %}
+        </span>
+        <span>{{ message }}</span>
+      </div>
+    {% endfor %}
+  </div>
+  {% endif %}
   {# --- Publish request: only show when not active and owner is viewing --- #}
   {% if not website.is_active and user.profile == website.user %}
-    <button id="publishRequestBtn" class="publish-btn" aria-label="Request publish" title="Request publish" aria-busy="false">
+    <a style="text-decoration:none;color:none;" href="/publish" class="publish-btn" aria-label="Request publish" title="Request publish" aria-busy="false">
       <span class="label" aria-hidden="true">Request publish</span>
       <i class="fas fa-paper-plane" aria-hidden="true"></i>
-    </button>
+    </a>
   {% endif %}
 
   <section id="hero" class="hero">
@@ -438,109 +528,6 @@
     }
 
     /****************************
-     * Publish request button behavior (enhanced)
-     * - POSTs to Django url name 'website_publish'
-     * - adds loading state + global wait cursor
-     * - handles 403 forbidden specially (not-allowed + disabled)
-     * - uses color-coded toasts
-     ****************************/
-    (function setupPublishButton(){
-      const btn = document.getElementById('publishRequestBtn');
-      if (!btn) return;
-
-      const publishUrl = "{% url 'website_publish' website.unique_name %}";
-      const csrftoken = getCookie('csrftoken');
-
-      // UI helpers
-      function enterLoading() {
-        btn.classList.add('loading');
-        btn.setAttribute('aria-busy', 'true');
-        // replace icon with spinner (keep label for hover)
-        btn._prevInner = btn.innerHTML;
-        btn.innerHTML = '<i class="fas fa-spinner spinner" aria-hidden="true"></i>';
-        // hint to user globally
-        document.documentElement.style.cursor = 'wait';
-        document.body.style.cursor = 'wait';
-      }
-      function exitLoading(prevHtml = null) {
-        btn.classList.remove('loading');
-        btn.setAttribute('aria-busy', 'false');
-        if (prevHtml !== null) btn.innerHTML = prevHtml;
-        // restore cursor
-        document.documentElement.style.cursor = '';
-        document.body.style.cursor = '';
-      }
-      function setForbiddenState() {
-        btn.classList.add('disabled');
-        btn.disabled = true;
-        btn.title = 'Not allowed';
-        btn.style.cursor = 'not-allowed';
-        btn.innerHTML = '<i class="fas fa-lock" aria-hidden="true"></i>';
-      }
-
-      async function sendPublishRequest() {
-        try {
-          enterLoading();
-
-          const res = await fetch(publishUrl, {
-            method: 'POST',
-            credentials: 'same-origin',
-            headers: {
-              'Content-Type': 'application/json',
-              ...(csrftoken ? { 'X-CSRFToken': csrftoken } : {})
-            },
-            body: JSON.stringify({}) // your view doesn't need payload
-          });
-
-          if (res.ok) {
-            // success
-            let data = {};
-            try { data = await res.json(); } catch (e) {}
-            const message = data && data.message ? data.message : 'Publish request sent — check your email/dashboard.';
-            showToast(message, 'success', 3500);
-
-            // friendly success UI
-            btn.innerHTML = '<i class="fas fa-check" aria-hidden="true"></i>';
-            btn.title = 'Request sent';
-            btn.disabled = true;
-            btn.style.opacity = '0.75';
-            exitLoading(btn.innerHTML); // keep success icon
-          } else if (res.status === 403) {
-            // forbidden -> user not owner or not allowed
-            showToast('You are not allowed to publish this website.', 'error', 4500);
-            setForbiddenState();
-            exitLoading(btn._prevInner);
-          } else {
-            // other errors -> show server message if provided
-            let err = 'Could not send publish request — please try again later.';
-            try {
-              const j = await res.json();
-              if (j && (j.error || j.message)) err = j.error || j.message;
-            } catch(e){}
-            showToast(err, 'error', 4500);
-            btn.disabled = false;
-            exitLoading(btn._prevInner);
-          }
-        } catch (err) {
-          console.error('Publish request failed', err);
-          showToast('Network error. Could not send request.', 'error', 4500);
-          btn.disabled = false;
-          exitLoading(btn._prevInner);
-        }
-      }
-
-      btn.addEventListener('click', (ev) => {
-        ev.preventDefault();
-        // avoid double activation
-        if (btn.disabled || btn.classList.contains('loading')) return;
-        // lightweight confirmation
-        if (!confirm('Send publish request for this website?')) return;
-        sendPublishRequest();
-      });
-    })();
-
-
-    /****************************
      * float nav behavior
      ****************************/
     (function setupFloatNav(){
@@ -652,5 +639,17 @@
     })();
 
   </script>
+  <script>
+    // Auto-hide flash messages after 4 seconds
+    setTimeout(() => {
+      document.querySelectorAll('.flash-message').forEach(msg => {
+        msg.style.transition = "opacity .4s, transform .4s";
+        msg.style.opacity = "0";
+        msg.style.transform = "translateY(-10px)";
+        setTimeout(() => msg.remove(), 400);
+      });
+    }, 4000);
+  </script>
+
 </body>
 </html>

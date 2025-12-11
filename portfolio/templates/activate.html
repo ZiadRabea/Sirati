@@ -1,0 +1,82 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Activate Your Portfolio — Sirati</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .font-playfair { font-family: 'Playfair Display', serif; }
+  </style>
+</head>
+
+<body class="bg-gray-50 text-gray-800">
+
+<!-- NAVBAR -->
+<header class="w-full py-6 fixed top-0 left-0 bg-white shadow-sm z-50 backdrop-blur-lg bg-opacity-80">
+  <div class="container mx-auto px-6 flex justify-between items-center">
+    <h1 class="text-2xl font-bold text-indigo-600">Sirati</h1>
+    <a href="/" class="px-6 py-2 bg-gray-100 text-gray-700 rounded-full shadow hover:bg-gray-200 transition">
+      Back Home
+    </a>
+  </div>
+</header>
+
+<!-- FORM SECTION -->
+<section class="pt-40 pb-24">
+  <div class="container mx-auto px-6 max-w-lg">
+
+    <h2 class="text-4xl font-playfair font-bold text-center text-gray-900 mb-10">
+      Activate Your Portfolio
+    </h2>
+
+    <p class="text-center text-gray-600 mb-8">
+      Enter the activation code sent to your email or WhatsApp.
+    </p>
+
+    <form method="POST" class="bg-white p-10 rounded-3xl shadow-xl">
+      {% csrf_token %}
+
+      <label class="block text-gray-700 font-medium mb-2">
+        Activation Code
+      </label>
+      <input type="text" id="code" name="code" required
+        class="w-full px-5 py-4 rounded-2xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-lg">
+
+      <button type="button" onclick="activate()"
+        class="mt-6 w-full py-4 bg-indigo-600 text-white text-lg rounded-2xl shadow-lg hover:bg-indigo-700 transition">
+        Activate Portfolio
+      </button>
+      <!-- WhatsApp Request Code Button -->
+      <a href="https://wa.me/+201200738657?text=Hello,%20I%20want%20to%20receive%20my%20portfolio%20activation%20code"
+        target="_blank"
+        class="mt-4 flex items-center justify-center w-full py-4 bg-green-500 text-white text-lg rounded-2xl shadow-lg hover:bg-green-600 transition">
+        <!-- Font Awesome WhatsApp Icon -->
+        <i class="fab fa-whatsapp mr-2"></i>
+        Request Code
+      </a>
+      {% if error %}
+      <p class="mt-4 text-red-500 text-center">{{ error }}</p>
+      {% endif %}
+      {% if success %}
+      <p class="mt-4 text-green-500 text-center">{{ success }}</p>
+      {% endif %}
+    </form>
+
+  </div>
+</section>
+<script>
+  function activate(){
+    key = document.getElementById("code").value
+
+    if (key){
+      window.open(String(window.location.origin) + "/publish/" + String(key))
+    }
+  }
+</script>
+</body>
+</html>

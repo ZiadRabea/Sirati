@@ -79,16 +79,18 @@ WSGI_APPLICATION = 'portfoliomaker.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'HOST': 'aws-1-eu-central-1.pooler.supabase.com',
-        'USER': 'postgres.puusdgraeapuiitzbwbn',
-        'PASSWORD': 'Sirati2026*',
-        'PORT': '6543',
+        'NAME': os.environ.get("db_name"),
+        'HOST': os.environ.get("db_host"),
+        'USER': os.environ.get("db_user"),
+        'PASSWORD': os.environ.get("db_password"),
+        'PORT': os.environ.get("db_port"),
     }
 }
+
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
 
@@ -156,5 +158,4 @@ EMAIL_PORT = 587
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
 

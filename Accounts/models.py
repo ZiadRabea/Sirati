@@ -8,7 +8,7 @@ from django.dispatch import receiver
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
     coins = models.FloatField(null=True, blank=True, default=0.0)
-    invited = models.ManyToManyField('Profile', blank=True)
+    invited = models.CharField(null=True, blank=True)
     unlimited = models.BooleanField(default=True)
 
     def __str__(self):

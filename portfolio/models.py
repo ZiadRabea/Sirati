@@ -1,6 +1,8 @@
 from django.db import models
 from Accounts.models import Profile
 from cloudinary_storage.storage import MediaCloudinaryStorage
+from django.utils.crypto import get_random_string
+
 # Create your models here.
 
 
@@ -8,6 +10,8 @@ class Website(models.Model):
     unique_name = models.SlugField(max_length=500, unique=True)
     user = models.OneToOneField(Profile, on_delete=models.CASCADE, blank=True)
     is_active = models.BooleanField(default=False)
+    activation_deadline = models.DateField(null=True, blank=True)
+    activation_margin = models.DateField(null=True, blank=True)
     cv_url = models.URLField(null=True, blank=True)
     full_name = models.CharField(max_length=100)
     profile_pic = models.ImageField(upload_to="profile_pictures", storage=MediaCloudinaryStorage)
@@ -57,3 +61,22 @@ class PublishRequest(models.Model):
     def __str__(self):
         return f"PublishRequest({self.website}, {self.user}, {self.created_at})"
     
+class Key(models.Model):
+    CODE_LENGTH = 10
+    
+    def generate_random_code():
+        return get_random_string(Key.CODE_LENGTH)
+    
+    user = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True, blank=True)
+
+    code = models.CharField(
+        max_length=CODE_LENGTH,
+        unique=True,  # Consider making it unique if it's an identifier
+        default=generate_random_code,  # Pass the function itself, not generate_random_code()
+        editable=False, # Optional: if you don't want it to be editable in forms/admin
+        null=True,
+        blank=True
+    )
+    expired = models.BooleanField(default=False, null=True, blank=True)
+    plans = (("Monthly","Monthly"),("Yearly","Yearly"),("Lifetime","Lifetime"))
+    plan = models.CharField(choices=plans, max_length=10)

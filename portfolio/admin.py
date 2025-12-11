@@ -1,9 +1,9 @@
 from django.contrib import admin
-from.models import Website, Skill, Experience, Project, Certificate, PublishRequest
+from.models import Website, Skill, Experience, Project, Certificate, PublishRequest, Key
 # Register your models here.
 
 admin.site.register(Website)
-
+admin.site.register(Key)
 admin.site.register(PublishRequest)
 admin.site.register(Skill)
 admin.site.register(Certificate)
