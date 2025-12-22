@@ -396,7 +396,7 @@ import hashlib
 
 @csrf_exempt
 @require_POST
-def kashier_webhook(request, plan):
+def kashier_webhook(request, plan, slug):
     # Parse JSON or form data
     try:
         data = json.loads(request.body.decode("utf-8"))["data"]
@@ -419,7 +419,7 @@ def kashier_webhook(request, plan):
 
     # Lookup website by order_id or user_id (adjust as needed)
     try:
-        website = request.user.profile.website  # example
+        website = Website.objects.get(unique_name=slug)
     except Website.DoesNotExist:
         return JsonResponse({"error": "Website not found"}, status=400)
 
@@ -442,7 +442,7 @@ def kashier_webhook(request, plan):
         action="payment",
         coupon=website.user.invited
     )
-
+    messages.success()
     print(f"✅ Website {website.id} activated for plan {plan_lower}")
     return JsonResponse({"message": f"Website activated for plan {plan_lower}"}, status=200)
 

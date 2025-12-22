@@ -36,7 +36,7 @@
       <h2 class="text-2xl font-semibold mb-4" id="plan-name">{%if plan == 'yearly'%} Annual {%else%} {{plan}} {%endif%} Plan</h2>
       <p class="text-5xl font-bold text-indigo-600 mb-4" id="plan-price">{{currency}} {{amount}}<span class="text-sm text-gray-500">/{{plan}}</span></p>
       <a
-        href="https://payments.kashier.io/?merchantId={{mid}}&orderId={{orderid}}&amount={{amount}}&currency={{currency}}&hash={{hash_string}}&mode=test&merchantRedirect={{encoded_url}}&serverWebhook=https://sirati.opindustries.space/kashier/webhook/{{plan}}&display=en&enable3DS=true&notes=''"
+        href="https://payments.kashier.io/?merchantId={{mid}}&orderId={{orderid}}&amount={{amount}}&currency={{currency}}&hash={{hash_string}}&mode=test&merchantRedirect={{encoded_url}}&serverWebhook=https://sirati.opindustries.space/kashier/webhook/{{plan}}/{{user.profile.website.unique_name}}&display=en&enable3DS=true&notes=''"
       >
       Activate Now
     </a>

@@ -27,7 +27,7 @@ urlpatterns = [
     path('admin_dashboard/', admin_dashboard),
     path('admin_dashboard/clear', clear_expired),
     path('publish/', publish),
-    path('payment/<str:plan>', subscribe),
+    path('payment/<str:plan>/<str:slug>', subscribe),
     path('kashier/webhook/<str:plan>', kashier_webhook),
     path('activate/code', publish_code),
     path('publish/<str:key>', publish_website, name='website_publish'),
