@@ -411,14 +411,14 @@ def kashier_webhook(request, plan):
     #     return JsonResponse({"error": "Invalid signature"}, status=403)
 
     status = data.get("status")
-    
+
     print(status)
-    if status != "success":
+    if status.lower != "success":
         return JsonResponse({"message": "Payment failed"}, status=200)
 
     # Lookup website by order_id or user_id (adjust as needed)
     try:
-        website = Website.objects.get(id=order_id)  # example
+        website = request.user.profile.website  # example
     except Website.DoesNotExist:
         return JsonResponse({"error": "Website not found"}, status=400)
 
