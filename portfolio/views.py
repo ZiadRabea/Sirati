@@ -411,9 +411,8 @@ def kashier_webhook(request, plan):
     #     return JsonResponse({"error": "Invalid signature"}, status=403)
 
     status = data.get("status")
-    amount = data.get("amount")
-    order_id = data.get("orderId")  # or another identifier to find the user/website
-
+    
+    print(status)
     if status != "success":
         return JsonResponse({"message": "Payment failed"}, status=200)
 
