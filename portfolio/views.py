@@ -386,10 +386,8 @@ def subscribe(request, plan):
     }
 
     return render(request, "payment.html", context)
+
 def validate_signature(data: dict, secret: str) -> bool:
-    """
-    Replicates Kashier HMAC-SHA256 signature verification
-    """
     query_parts = []
 
     # Sort keys alphabetically to ensure deterministic order
