@@ -3,6 +3,7 @@ from Accounts.models import Profile
 from cloudinary_storage.storage import MediaCloudinaryStorage
 from django.contrib.postgres.fields import ArrayField
 from django.utils.crypto import get_random_string
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 # Create your models here.
 
@@ -31,7 +32,10 @@ class Website(models.Model):
 
 class Skill(models.Model):
     skill = models.CharField(max_length=100)
-    mastery = models.IntegerField()
+    mastery = models.IntegerField(validators=[
+            MinValueValidator(1),
+            MaxValueValidator(100)
+        ])
     website = models.ForeignKey(Website, on_delete=models.CASCADE)
 
 
