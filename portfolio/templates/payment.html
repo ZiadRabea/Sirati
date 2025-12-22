@@ -35,22 +35,20 @@
     <div class="bg-white rounded-3xl shadow-xl p-10 mb-10">
       <h2 class="text-2xl font-semibold mb-4" id="plan-name">{%if plan == 'yearly'%} Annual {%else%} {{plan}} {%endif%} Plan</h2>
       <p class="text-5xl font-bold text-indigo-600 mb-4" id="plan-price">{{currency}} {{amount}}<span class="text-sm text-gray-500">/{{plan}}</span></p>
-      <script
-        id="kashier-iFrame"
-        src="https://payments.kashier.io/kashier-checkout.js"
-        data-amount="{{amount}}"
-        data-hash="{{hash_string}}"
-        data-currency="{{currency}}"
-        data-orderId="{{orderid}}"
-        data-merchantId="{{mid}}"
-        data-merchantRedirect= "https%3A%2F%2Fsirati.opindustries.space"
-        data-serverWebhook="https://sirati.opindustries.space/kashier/webhook/{{plan}}"
-        data-mode="test"
-        data-description="Portfolio Subscription ({{plan}})"
-        data-type="external"
-        data-display="en"
-        data-enable3DS="true"
-      ></script>
+      <a
+        href="https://payments.kashier.io/?merchantId={{mid}}&
+        orderId={{orderid}}&
+        amount={{amount}}&
+        currency={{currency}}&
+        hash={{hash_string}}&
+        mode=test&
+        merchantRedirect={{encoded_url}}&
+        serverWebhook=https://sirati.opindustries.space/kashier/webhook/{{plan}}&
+        display=en&
+        enable3DS=true&
+        metaData={customKey:customValue,displayNotes:{key:value}}&
+        notes=''"
+      ></a>
     </div>
 
     <!-- OPTIONAL: CANCEL / CHANGE PLAN -->
