@@ -414,7 +414,7 @@ def kashier_webhook(request, plan):
     amount = data.get("amount")
     order_id = data.get("orderId")  # or another identifier to find the user/website
 
-    if status != "SUCCESS":
+    if status != "success":
         return JsonResponse({"message": "Payment failed"}, status=200)
 
     # Lookup website by order_id or user_id (adjust as needed)
