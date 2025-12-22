@@ -22,6 +22,7 @@ import hashlib
 import os
 import uuid
 from.utils import validate_signature
+import urllib
 KASHIER_SECRET = os.environ.get("MID")
 
 logger = logging.getLogger(__name__)
@@ -377,13 +378,16 @@ def subscribe(request, plan):
 
     hash_string = hmac.new(secret.encode("utf-8"), path.encode("utf-8"), hashlib.sha256).hexdigest()
 
+    redirect_url = urllib.parse.quote(f"https://sirati.opindustries.space/{request.user.profile.website.unique_name}")
+
     context = {
         "mid": MID,
         "hash_string": hash_string,
         "amount": amount,
         "currency": currency,
         "orderid": orderid,
-        "plan": plan
+        "plan": plan,
+        "encoded_url": redirect_url
     }
 
     return render(request, "payment.html", context)
