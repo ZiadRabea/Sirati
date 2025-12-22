@@ -403,6 +403,8 @@ def kashier_webhook(request, plan):
     except json.JSONDecodeError:
         data = request.POST.dict()
 
+    print(data)
+
     if not data:
         return HttpResponseBadRequest("Empty payload")
 
@@ -412,7 +414,6 @@ def kashier_webhook(request, plan):
 
     status = data.get("status")
 
-    print(status)
     if status.lower != "success":
         return JsonResponse({"message": "Payment failed"}, status=200)
 
