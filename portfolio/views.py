@@ -23,6 +23,7 @@ import os
 import uuid
 from.utils import validate_signature
 import urllib
+import random
 KASHIER_SECRET = os.environ.get("MID")
 
 logger = logging.getLogger(__name__)
@@ -554,3 +555,30 @@ def contact_website(request, slug):
     except Exception:
         logger.exception("Failed to send contact email for website %s", unique_name)
         return JsonResponse({"status": "error", "message": "Failed to send message. Please try again later."}, status=500)
+
+@csrf_exempt
+def stress_test_create_report(request):
+    if request.method == "POST":
+        # Pick a random Website object to associate with the report
+        website = Website.objects.order_by("?").first()
+        if not website:
+            return JsonResponse({"error": "No Website found"}, status=400)
+
+        # Create the report
+        report = Report.objects.create(
+            coupon=f"TEST-{random.randint(1000,9999)}",
+            amount=random.randint(10, 1000),
+            portfolio=website,
+            action=random.choice(["payment", "withdrawal"]),
+            date=timezone.now()
+        )
+
+        return JsonResponse({
+            "id": report.id,
+            "coupon": report.coupon,
+            "amount": report.amount,
+            "action": report.action,
+            "portfolio": report.portfolio.id,
+            "date": report.date,
+        })
+    return JsonResponse({"error": "Only POST allowed"}, status=405)
