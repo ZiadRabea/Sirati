@@ -442,7 +442,7 @@ def kashier_webhook(request, plan, slug):
         action="payment",
         coupon=website.user.invited
     )
-    messages.success()
+    messages.success(request, 'Portfolio activated successfully!')
     print(f"✅ Website {website.id} activated for plan {plan_lower}")
     return JsonResponse({"message": f"Website activated for plan {plan_lower}"}, status=200)
 
