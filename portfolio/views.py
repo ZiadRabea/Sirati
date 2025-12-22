@@ -381,7 +381,7 @@ def subscribe(request, plan):
         "hash_string": hash_string,
         "amount": amount,
         "currency": currency,
-        "orederid": orderid,
+        "orderid": orderid,
         "plan": plan
     }
 
