@@ -371,13 +371,10 @@ def subscribe(request, plan):
     currency = "EGP"
     orderid = f"{plan}-{uuid.uuid4().hex[:8]}" 
     CustomerReference = 1
-    path = f"/?payment={MID}.{orderid}.{amount}.{currency}"
-    if CustomerReference:
-        path += f".{CustomerReference}"
-    secret = KASHIER_SECRET
-
-    hash_string = hmac.new(secret.encode("utf-8"), path.encode("utf-8"), hashlib.sha256).hexdigest()
-
+    path = '/?payment={}.{}.{}.{}'.format( MID, orderid, amount, currency )
+    path = bytes(path, 'utf-8')
+    secret= bytes(secret, 'utf-8')
+    hash_string = hmac.new(secret, path, hashlib.sha256).hexdigest()
     redirect_url = urllib.parse.quote(f"https://sirati.opindustries.space/{request.user.profile.website.unique_name}")
 
     context = {
