@@ -399,7 +399,7 @@ import hashlib
 def kashier_webhook(request, plan):
     # Parse JSON or form data
     try:
-        data = json.loads(request.body.decode("utf-8"))
+        data = json.loads(request.body.decode("utf-8"))["data"]
     except json.JSONDecodeError:
         data = request.POST.dict()
 
@@ -411,7 +411,8 @@ def kashier_webhook(request, plan):
     # # Verify signature
     # if not validate_signature(data, KASHIER_SECRET):
     #     return JsonResponse({"error": "Invalid signature"}, status=403)
-    status = data["data"]["status"]
+    status = data.get("status")
+    print(status)
 
     if status != "SUCCESS":
         return JsonResponse({"message": "Payment failed"}, status=200)
