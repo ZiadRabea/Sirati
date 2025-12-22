@@ -1,4 +1,7 @@
-def validateSignature(request, secret):
+import hmac
+import hashlib
+
+def validate_signature(request, secret):
   queryString = ""
   for key in request:
       if key == "signature" or key == "mode":
