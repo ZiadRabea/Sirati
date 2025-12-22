@@ -21,6 +21,7 @@ import hmac
 import hashlib
 import os
 import uuid
+from.utils import validate_signature
 KASHIER_SECRET = os.environ.get("MID")
 
 logger = logging.getLogger(__name__)
@@ -387,24 +388,10 @@ def subscribe(request, plan):
 
     return render(request, "payment.html", context)
 
-def validate_signature(data: dict, secret: str) -> bool:
-    query_parts = []
+# Copy and paste this code in your backend
+import hmac
+import hashlib
 
-    # Sort keys alphabetically to ensure deterministic order
-    for key in sorted(data.keys()):
-        if key in ["signature", "mode"]:
-            continue
-        query_parts.append(f"{key}={data[key]}")
-
-    query_string = "&".join(query_parts)
-
-    computed_signature = hmac.new(
-        secret.encode("utf-8"),
-        query_string.encode("utf-8"),
-        hashlib.sha256
-    ).hexdigest()
-
-    return computed_signature == data.get("signature")
 
 @csrf_exempt
 @require_POST
