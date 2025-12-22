@@ -373,7 +373,7 @@ def subscribe(request, plan):
     CustomerReference = 1
     path = '/?payment={}.{}.{}.{}'.format( MID, orderid, amount, currency )
     path = bytes(path, 'utf-8')
-    secret= bytes(secret, 'utf-8')
+    secret= bytes(KASHIER_SECRET, 'utf-8')
     hash_string = hmac.new(secret, path, hashlib.sha256).hexdigest()
     redirect_url = urllib.parse.quote(f"https://sirati.opindustries.space/{request.user.profile.website.unique_name}")
 
