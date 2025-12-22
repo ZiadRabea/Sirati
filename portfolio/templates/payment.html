@@ -1,0 +1,70 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sirati — Confirm Your Plan</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .font-playfair { font-family: 'Playfair Display', serif; }
+  </style>
+</head>
+
+<body class="bg-gray-50 text-gray-800">
+
+<!-- NAVBAR -->
+<header class="w-full py-6 fixed top-0 left-0 bg-white backdrop-blur-lg bg-opacity-80 shadow-sm z-50">
+  <div class="container mx-auto px-6 flex justify-between items-center">
+    <h1 class="text-2xl font-bold text-indigo-600">Sirati</h1>
+    <a href="/" class="px-6 py-2 bg-indigo-600 text-white rounded-full shadow hover:bg-indigo-700 transition">Home</a>
+  </div>
+</header>
+
+<!-- HERO / CONFIRMATION -->
+<section class="pt-32 pb-16 bg-white text-center">
+  <div class="container mx-auto px-6 max-w-lg">
+    <h1 class="text-4xl md:text-5xl font-playfair font-bold text-gray-900 mb-4">
+      Confirm Your Plan
+    </h1>
+    <p class="text-gray-600 text-lg mb-10">You're about to subscribe to the plan below. Please review the details before proceeding.</p>
+
+    <!-- PLAN SUMMARY CARD -->
+    <div class="bg-white rounded-3xl shadow-xl p-10 mb-10">
+      <h2 class="text-2xl font-semibold mb-4" id="plan-name">{%if plan == 'yearly'%} Annual {%else%} {{plan}} {%endif%} Plan</h2>
+      <p class="text-5xl font-bold text-indigo-600 mb-4" id="plan-price">{{currency}} {{amount}}<span class="text-sm text-gray-500">/{{plan}}</span></p>
+      <script
+        id="kashier-iFrame"
+        src="https://payments.kashier.io/kashier-checkout.js"
+        data-amount="{{amount}}"
+        data-hash="{{hash_string}}"
+        data-currency="{{currency}}"
+        data-orderId="{{orderid}}"
+        data-merchantId="{{mid}}"
+        data-merchantRedirect="https://sirati.opindustries.space"
+        data-serverWebhook="https://sirati.opindustries.space/kashier/webhook/{{plan}}/"
+        data-mode="test"
+        data-description="Portfolio Subscription ({{plan}})"
+        data-type="external"
+        data-display="en"
+        data-enable3DS="true"
+      ></script>
+    </div>
+
+    <!-- OPTIONAL: CANCEL / CHANGE PLAN -->
+    <a href="/publish" class="text-indigo-600 hover:text-indigo-800 transition">← Change Plan</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="py-16 bg-gray-900 text-gray-300 mt-20">
+  <div class="container mx-auto px-6 text-center">
+    <h3 class="text-xl font-semibold text-white">Sirati</h3>
+    <p class="mt-2 text-gray-400">Your resume, beautifully transformed.</p>
+    <p class="text-gray-500 mt-8">© 2025 Sirati. All rights reserved.</p>
+  </div>
+</footer>
+</body>
+</html>

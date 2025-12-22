@@ -17,6 +17,12 @@ from django.conf import settings
 from django.core.mail import send_mail, mail_admins, BadHeaderError
 import logging
 import json
+import hmac
+import hashlib
+import os
+import uuid
+KASHIER_SECRET = os.environ.get("MID")
+
 logger = logging.getLogger(__name__)
 # Create your views here.
 
@@ -91,17 +97,28 @@ def create(request):
 @xframe_options_exempt
 def display(request, slug):
     website = Website.objects.get(unique_name=slug)
+    
+    if website.activation_margin and website.activation_margin < timezone.now().date():
+        website.is_active = False
+        website.save()
+
+    if website.activation_deadline and (website.activation_deadline < timezone.now().date() <  website.activation_margin) and website.user==request.user.profile:
+        warning = True
+    else:
+        warning = False
+
     skills = Skill.objects.filter(website=website)
     projects = Project.objects.filter(website=website)
     work = Experience.objects.filter(website=website)
-    certs = Certificate.objects.filter(website=website)
+
     context = {
         "website": website,
         "skills": skills,
         "projects": projects,
         "works": work,
-        "certs": certs
+        "warning": warning
     }
+    print(warning)
     try:
         if website.is_active or website.user == request.user.profile:
             return render(request, "portfolio.html", context)
@@ -113,8 +130,11 @@ def display(request, slug):
 @login_required
 def add_skill(request, slug):
     website = Website.objects.get(unique_name=slug)
+    
+    
     if request.user.profile != website.user:
         return redirect("/error")
+        
     else:
         skills = Skill.objects.filter(website=website)
         if request.method == "POST":
@@ -295,35 +315,38 @@ def publish_website(request, key):
     if code.plan == "Yearly" and not code.expired:
         website.is_active = True
         website.activation_deadline = timezone.now() + timedelta(days=365)
-        website.activation_margin = timezone.now() + timedelta(days=365+15)
+        website.activation_margin = timezone.now() + timedelta(days=365+7)
         website.save()
         code.user.coins += 5
         code.user.save()
         code.expired = True
         code.save()
+        Report.objects.create(amount=500, portfolio=website, action="payment", coupon=website.user.invited)
         messages.success(request, 'Portfolio activated successfully!')
         return redirect(f"/{website.unique_name}")
     elif code.plan == "Monthly" and not code.expired:
         website.is_active = True
         website.activation_deadline = timezone.now() + timedelta(days=30)
-        website.activation_margin = timezone.now() + timedelta(days=30+15)
+        website.activation_margin = timezone.now() + timedelta(days=30+7)
         website.save()
         code.user.coins += 5
         code.user.save()
         code.expired = True
         code.save()
+        Report.objects.create(amount=50, portfolio=website, action="payment", coupon=website.user.invited)
         messages.success(request, 'Portfolio activated successfully!')
         return redirect(f"/{website.unique_name}")
     
-    elif code.plan == "Lifetime" and not code.expired:
+    elif code.plan == "Quarterly" and not code.expired:
         website.is_active = True
-        website.activation_deadline = timezone.now() + timedelta(days=3650) #10 Years
-        website.activation_margin = timezone.now() + timedelta(days=3650+15) #10 Years
+        website.activation_deadline = timezone.now() + timedelta(days=90) #3 months
+        website.activation_margin = timezone.now() + timedelta(days=90+7) #3 months + 15 days
         website.save()
         code.user.coins += 5
         code.user.save()
         code.expired = True
         code.save()
+        Report.objects.create(amount=150, portfolio=website, action="payment", coupon=website.user.invited)
         messages.success(request, 'Portfolio activated successfully!')
         return redirect(f"/{website.unique_name}")
     else:
@@ -331,7 +354,111 @@ def publish_website(request, key):
     
 @login_required
 def publish(request):
+    return render(request, "activation_options.html")
+
+@login_required
+def publish_code(request):
     return render(request, "activate.html")
+
+@login_required
+def subscribe(request, plan):
+    MID = "MID-41408-888"
+    if plan =="monthly": amount = 50
+    if plan == "yearly": amount = 500
+    if plan == "quarterly": amount = 150
+    currency = "EGP"
+    orderid = f"{plan}-{uuid.uuid4().hex[:8]}" 
+    CustomerReference = 1
+    path = f"/?payment={MID}.{orderid}.{amount}.{currency}"
+    if CustomerReference:
+        path += f".{CustomerReference}"
+    secret = KASHIER_SECRET
+
+    hash_string = hmac.new(secret.encode("utf-8"), path.encode("utf-8"), hashlib.sha256).hexdigest()
+
+    context = {
+        "mid": MID,
+        "hash_string": hash_string,
+        "amount": amount,
+        "currency": currency,
+        "orederid": orderid,
+        "plan": plan
+    }
+
+    return render(request, "payment.html", context)
+def validate_signature(data: dict, secret: str) -> bool:
+    """
+    Replicates Kashier HMAC-SHA256 signature verification
+    """
+    query_parts = []
+
+    # Sort keys alphabetically to ensure deterministic order
+    for key in sorted(data.keys()):
+        if key in ["signature", "mode"]:
+            continue
+        query_parts.append(f"{key}={data[key]}")
+
+    query_string = "&".join(query_parts)
+
+    computed_signature = hmac.new(
+        secret.encode("utf-8"),
+        query_string.encode("utf-8"),
+        hashlib.sha256
+    ).hexdigest()
+
+    return computed_signature == data.get("signature")
+
+@csrf_exempt
+@require_POST
+def kashier_webhook(request, plan):
+    # Parse JSON or form data
+    try:
+        data = json.loads(request.body.decode("utf-8"))
+    except json.JSONDecodeError:
+        data = request.POST.dict()
+
+    if not data:
+        return HttpResponseBadRequest("Empty payload")
+
+    # Verify signature
+    if not validate_signature(data, KASHIER_SECRET):
+        return JsonResponse({"error": "Invalid signature"}, status=403)
+
+    status = data.get("status")
+    amount = data.get("amount")
+    order_id = data.get("orderId")  # or another identifier to find the user/website
+
+    if status != "SUCCESS":
+        return JsonResponse({"message": "Payment failed"}, status=200)
+
+    # Lookup website by order_id or user_id (adjust as needed)
+    try:
+        website = Website.objects.get(id=order_id)  # example
+    except Website.DoesNotExist:
+        return JsonResponse({"error": "Website not found"}, status=400)
+
+    # Plan-based activation
+    plan_days = {"monthly": 30, "quarterly": 90, "yearly": 365}
+    plan_amounts = {"monthly": 50, "quarterly": 150, "yearly": 500}
+
+    plan_lower = plan.lower()
+    if plan_lower not in plan_days:
+        return JsonResponse({"error": "Unknown plan"}, status=400)
+
+    website.is_active = True
+    website.activation_deadline = timezone.now() + timedelta(days=plan_days[plan_lower])
+    website.activation_margin = timezone.now() + timedelta(days=plan_days[plan_lower]+7)
+    website.save()
+
+    Report.objects.create(
+        amount=plan_amounts[plan_lower],
+        portfolio=website,
+        action="payment",
+        coupon=website.user.invited
+    )
+
+    print(f"✅ Website {website.id} activated for plan {plan_lower}")
+    return JsonResponse({"message": f"Website activated for plan {plan_lower}"}, status=200)
 
 @login_required
 def admin_dashboard(request):
@@ -341,7 +468,7 @@ def admin_dashboard(request):
     else:
         yearly_codes = Key.objects.filter(plan="Yearly", user=user)
         monthly_codes = Key.objects.filter(plan="Monthly", user=user)
-        lifetime_codes = Key.objects.filter(plan="Lifetime", user=user)
+        quarterly_codes = Key.objects.filter(plan="Quarterly", user=user)
 
         if request.method == "POST":
             form = Create_Key(request.POST, request.FILES)
@@ -358,7 +485,7 @@ def admin_dashboard(request):
         context = {
             "yearly_codes": yearly_codes,
             "monthly_codes": monthly_codes,
-            "lifetime_codes": lifetime_codes,
+            "quarterly_codes": quarterly_codes,
             "form": form,
         }
 

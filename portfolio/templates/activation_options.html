@@ -1,0 +1,135 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Plans & Options — Sirati</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-white text-gray-800">
+
+<!-- HERO -->
+<section class="pt-32 pb-20 bg-gradient-to-br from-white via-gray-50 to-indigo-50">
+  <div class="container mx-auto px-6 text-center">
+    <h1 class="text-5xl md:text-6xl font-bold text-gray-900">
+      Simple, Transparent Pricing
+    </h1>
+    <p class="mt-6 text-lg text-gray-600 max-w-2xl mx-auto">
+      Choose the plan that fits you best. Lock in early pricing before future increases.
+    </p>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="py-24">
+  <div class="container mx-auto px-6">
+    <div class="grid md:grid-cols-3 gap-12 max-w-6xl mx-auto">
+
+      <!-- MONTHLY -->
+      <div class="p-10 rounded-3xl shadow-lg bg-gray-50 hover:shadow-xl transition text-center">
+        <h3 class="text-2xl font-semibold mb-2">Monthly</h3>
+        <p class="text-gray-500 mb-6">Short-term access</p>
+        <p class="text-5xl font-bold text-indigo-600 mb-6">$1</p>
+        <ul class="text-gray-600 space-y-3 mb-8">
+          <li>✔ Full portfolio access</li>
+          <li>✔ Live editing</li>
+          <li>✔ Cancel anytime</li>
+        </ul>
+        <a href="/payment/monthly" class="block bg-indigo-600 text-white py-4 rounded-full shadow hover:bg-indigo-700 transition cursor-pointer">
+          Subscribe Monthly
+        </a>
+      </div>
+
+      <!-- YEARLY (BEST VALUE) -->
+      <div class="p-12 rounded-3xl shadow-2xl bg-indigo-600 text-white scale-105 text-center relative">
+        <span class="absolute -top-4 left-1/2 -translate-x-1/2 bg-white text-indigo-600 text-sm font-semibold px-4 py-1 rounded-full shadow">
+          Best Value
+        </span>
+
+        <h3 class="text-2xl font-semibold mb-2">Yearly</h3>
+        <p class="text-indigo-100 mb-6">Long-term & future-proof</p>
+        <p class="text-5xl font-bold mb-2">$10</p>
+        <p class="text-indigo-200 mb-6 text-sm">
+          Save 2 months • 20× cheaper than competitors
+        </p>
+
+        <ul class="text-indigo-100 space-y-3 mb-8">
+          <li>✔ Everything in Monthly</li>
+          <li>✔ Locked-in early pricing</li>
+          <li>✔ Best long-term value</li>
+        </ul>
+
+        <a href="/payment/yearly" class="block bg-white text-indigo-700 py-4 rounded-full shadow hover:bg-indigo-50 transition cursor-pointer">
+          Subscribe Yearly
+        </a>
+      </div>
+
+      <!-- QUARTERLY -->
+      <div class="p-10 rounded-3xl shadow-lg bg-gray-50 hover:shadow-xl transition text-center">
+        <h3 class="text-2xl font-semibold mb-2">Quarterly</h3>
+        <p class="text-gray-500 mb-6">3 months access</p>
+        <p class="text-5xl font-bold text-indigo-600 mb-6">$3</p>
+        <ul class="text-gray-600 space-y-3 mb-8">
+          <li>✔ Full portfolio access</li>
+          <li>✔ Live editing</li>
+          <li>✔ Better than monthly</li>
+        </ul>
+        <a href="/payment/quorterly" class="block bg-indigo-600 text-white py-4 rounded-full shadow hover:bg-indigo-700 transition cursor-pointer">
+          Subscribe Quarterly
+        </a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ACTIVATE WITH CODE -->
+<section class="py-24 bg-gray-50">
+  <div class="container mx-auto px-6 max-w-4xl text-center">
+    <h2 class="text-4xl font-bold mb-6">
+      Activate with a Code
+    </h2>
+    <p class="text-gray-600 text-lg mb-10">
+      Having trouble with a credit card or mobile wallet?
+      You can still activate your plan easily.
+    </p>
+
+    <div class="bg-white rounded-3xl shadow-lg p-10 text-left space-y-6">
+      <div class="flex gap-4">
+        <span class="text-indigo-600 font-bold">1.</span>
+        <p>Contact the Sirati team through our support channels.</p>
+      </div>
+      <div class="flex gap-4">
+        <span class="text-indigo-600 font-bold">2.</span>
+        <p>Pay using a local or offline payment method.</p>
+      </div>
+      <div class="flex gap-4">
+        <span class="text-indigo-600 font-bold">3.</span>
+        <p>Receive your activation key and unlock your plan instantly.</p>
+      </div>
+      <div class="mt-12">
+      <a href="/activate/code"
+         class="inline-block px-8 py-4 bg-indigo-600 text-white rounded-full shadow hover:bg-indigo-700 transition">
+            Activate Now
+      </a>
+    </div>
+    </div>
+
+    <div class="mt-12">
+      <a href="/ZiadRabea#contact-title"
+         class="inline-block px-8 py-4 bg-indigo-600 text-white rounded-full shadow hover:bg-indigo-700 transition">
+            Contact Support
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="py-12 bg-gray-900 text-gray-400 text-center">
+  <p>© 2025 Sirati. All rights reserved.</p>
+</footer>
+
+</body>
+</html>

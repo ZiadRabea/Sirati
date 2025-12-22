@@ -81,5 +81,17 @@ class Key(models.Model):
         blank=True
     )
     expired = models.BooleanField(default=False, null=True, blank=True)
-    plans = (("Monthly","Monthly"),("Yearly","Yearly"),("Lifetime","Lifetime"))
+    plans = (("Monthly","Monthly"),("Yearly","Yearly"),("Quarterly","Quarterly"))
     plan = models.CharField(choices=plans, max_length=10)
+
+
+class Report(models.Model):
+    coupon = models.CharField(max_length=100, null=True, blank=True)
+    amount = models.IntegerField(null=True, blank=True)
+    portfolio = models.ForeignKey(Website, on_delete=models.CASCADE)
+    actions = (("payment", "payment"),("withdrawal", "withdrawal"))
+    action = models.CharField(max_length=100, choices=actions)
+    date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"EGP {self.amount} | {self.action} | {self.portfolio.user}"

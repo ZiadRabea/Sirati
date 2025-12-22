@@ -86,9 +86,9 @@
 
     <!-- LIFETIME -->
     <div class="bg-white p-8 rounded-3xl shadow-lg">
-      <h3 class="text-2xl font-semibold mb-6 text-indigo-600">Lifetime / 10 Years</h3>
+      <h3 class="text-2xl font-semibold mb-6 text-indigo-600">Quarterly / 3 months</h3>
 
-      {% for code in lifetime_codes %}
+      {% for code in quarterly_codes %}
       <div class="flex items-center justify-between mb-4 p-4 rounded-2xl
         {% if code.expired %} bg-red-100 text-red-700 {% else %} bg-green-100 text-green-700 {% endif %}">
         <div>
@@ -99,7 +99,7 @@
         </div>
       </div>
       {% empty %}
-      <p class="text-gray-500">No lifetime codes.</p>
+      <p class="text-gray-500">No Quarterly codes.</p>
       {% endfor %}
     </div>
 
@@ -118,7 +118,7 @@
           <option value="">-- Choose Plan --</option>
           <option value="Monthly">Monthly</option>
           <option value="Yearly">Yearly</option>
-          <option value="Lifetime">10 Years</option>
+          <option value="Quarterly">Quarterly</option>
         </select>
       </div>
 
