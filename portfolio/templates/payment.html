@@ -29,13 +29,13 @@
     <h1 class="text-4xl md:text-5xl font-playfair font-bold text-gray-900 mb-4">
       Confirm Your Plan
     </h1>
-    <p class="px-6 py-2 bg-indigo-600 text-white rounded-full shadow hover:bg-indigo-700 transition" class="text-gray-600 text-lg mb-10">You're about to subscribe to the plan below. Please review the details before proceeding.</p>
+    <p class="text-gray-600 text-lg mb-10">You're about to subscribe to the plan below. Please review the details before proceeding.</p>
 
     <!-- PLAN SUMMARY CARD -->
     <div class="bg-white rounded-3xl shadow-xl p-10 mb-10">
       <h2 class="text-2xl font-semibold mb-4" id="plan-name">{%if plan == 'yearly'%} Annual {%else%} {{plan}} {%endif%} Plan</h2>
       <p class="text-5xl font-bold text-indigo-600 mb-4" id="plan-price">{{currency}} {{amount}}<span class="text-sm text-gray-500">/{{plan}}</span></p>
-      <a
+      <a class="px-6 py-2 bg-indigo-600 text-white rounded-full shadow hover:bg-indigo-700 transition"
         href="https://payments.kashier.io/?merchantId={{mid}}&orderId={{orderid}}&amount={{amount}}&currency={{currency}}&hash={{hash_string}}&mode=test&merchantRedirect={{encoded_url}}&serverWebhook=https://sirati.opindustries.space/kashier/webhook/{{plan}}/{{user.profile.website.unique_name}}&display=en&enable3DS=true&notes=''"
       >
       Activate Now
