@@ -26,7 +26,7 @@ urlpatterns = [
     path('error/', error),
     path('contact/', contact_view),
     path('refund-policy/', refund_policy),
-    path("stress-test/create-report/", stress_test_create_report, name="stress_test_create_report"),
+    # path("stress-test/create-report/", stress_test_create_report, name="stress_test_create_report"),
     path('admin_dashboard/', admin_dashboard),
     path('admin_dashboard/clear', clear_expired),
     path('publish/', publish),
