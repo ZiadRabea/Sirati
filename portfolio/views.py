@@ -480,6 +480,24 @@ def clear_expired(request):
         keys.delete()
         return redirect('/admin_dashboard')
 
+
+def contact_view(request):
+    if request.method == "POST":
+        name = request.POST.get("name")
+        email = request.POST.get("email")
+        message = request.POST.get("message")
+
+        send_mail(
+            subject=f"Sirati Contact — {name}",
+            message=f"From: {email}\n\n{message}",
+            from_email=email,
+            recipient_list=["support@opindustries.space"],
+        )
+
+        return redirect("/contact?sent=true")
+
+    return render(request, "contact.html")
+
 @csrf_exempt
 @require_POST
 def contact_website(request, slug):
