@@ -467,7 +467,6 @@ def admin_dashboard(request):
             "quarterly_codes": quarterly_codes,
             "form": form,
         }
-        messages.success(request, 'Portfolio activated successfully!')
         return render(request, "dashboard.html", context)
 
 @login_required
