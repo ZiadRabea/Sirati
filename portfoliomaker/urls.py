@@ -24,7 +24,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home),
     path('error/', error),
-    path('refund-policy/', error),
+    path('refund-policy/', refund_policy),
     path("stress-test/create-report/", stress_test_create_report, name="stress_test_create_report"),
     path('admin_dashboard/', admin_dashboard),
     path('admin_dashboard/clear', clear_expired),
