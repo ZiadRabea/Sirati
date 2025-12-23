@@ -37,16 +37,8 @@ def home(request):
 def error(request):
     return render(request, "error.html")
 
-def search(request):
-    cvs = Website.objects.filter(is_active=True)
-    filter = WebsiteFilter(request.GET, queryset = cvs)
-    cvs = filter.qs
-
-    context = {
-        "cvs" : cvs,
-        "filter": filter
-    }
-    return render(request, "search.html", context)
+def refund_policy(request):
+    return render(request, "refund_policy.html")
 
 @login_required
 def create(request):
