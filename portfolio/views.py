@@ -467,7 +467,7 @@ def admin_dashboard(request):
             "quarterly_codes": quarterly_codes,
             "form": form,
         }
-
+        messages.success(request, 'Thank you for contacting Sirati. We’ve received your message and will get back to you soon.')
         return render(request, "dashboard.html", context)
 
 @login_required
@@ -494,7 +494,7 @@ def contact_view(request):
             recipient_list=["support@opindustries.space"],
         )
 
-        return redirect("/contact?sent=true")
+        return redirect("/contact")
 
     return render(request, "contact.html")
 
