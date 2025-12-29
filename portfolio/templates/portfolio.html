@@ -489,40 +489,40 @@
               <span id="owner-email">—</span>
             {% endif %}
           </div>
-        </div>
-        {% if website.tele or website.wp or website.fb or website.inta %}
-            <div class="about-socials" aria-label="Social media links">
-              {% if website.tele %}
-                <a href="{{ website.tele }}" target="_blank" rel="noopener" title="GitHub">
-                  <i class="fa-brands fa-telegram"></i>
-                </a>
-              {% endif %}
-
-              {% if website.wp %}
-                <a href="{{ website.wp }}" target="_blank" rel="noopener" title="LinkedIn">
-                  <i class="fa-brands fa-whatsapp"></i>
-                </a>
-              {% endif %}
-
-              {% if website.fb %}
-                <a href="{{ website.fb }}" target="_blank" rel="noopener" title="Twitter / X">
-                  <i class="fa-brands fa-facebook-f"></i>
-                </a>
-              {% endif %}
-
-              {% if website.insta %}
-                <a href="{{ website.insta}}" target="_blank" rel="noopener" title="Instagram">
-                  <i class="fab fa-instagram"></i>
-                </a>
-              {% endif %}
-            </div>
-          {% endif %}
           {% if website.website_url %}
             <div class="meta-item" title="Website">
               <i class="fas fa-link" aria-hidden="true"></i>
               <a href="{{ website.website_url }}" target="_blank" rel="noopener noreferrer">{{ website.website_url|cut:'https://'|cut:'http://' }}</a>
             </div>
           {% endif %}
+        </div>
+        {% if website.tele or website.wp or website.fb or website.inta %}
+          <div class="about-socials" aria-label="Social media links">
+            {% if website.tele %}
+              <a href="{{ website.tele }}" target="_blank" rel="noopener" title="GitHub">
+                <i class="fa-brands fa-telegram"></i>
+              </a>
+            {% endif %}
+
+            {% if website.wp %}
+              <a href="{{ website.wp }}" target="_blank" rel="noopener" title="LinkedIn">
+                <i class="fa-brands fa-whatsapp"></i>
+              </a>
+            {% endif %}
+
+            {% if website.fb %}
+              <a href="{{ website.fb }}" target="_blank" rel="noopener" title="Twitter / X">
+                <i class="fa-brands fa-facebook-f"></i>
+              </a>
+            {% endif %}
+
+            {% if website.insta %}
+              <a href="{{ website.insta}}" target="_blank" rel="noopener" title="Instagram">
+                <i class="fab fa-instagram"></i>
+              </a>
+            {% endif %}
+          </div>
+        {% endif %}
       </div>
     </div>
   </div>
