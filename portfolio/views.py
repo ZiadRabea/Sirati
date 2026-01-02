@@ -10,8 +10,6 @@ from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from datetime import timedelta
-from django.contrib.sitemaps import Sitemap
-from django.urls import reverse
 from .forms import *
 from .filters import *
 from .models import *
@@ -589,17 +587,3 @@ def stress_test_create_report(request):
         "portfolio": report.portfolio.id,
         "date": report.date,
     })
-
-class StaticViewSitemap(Sitemap):
-    priority = 0.8
-    changefreq = "weekly"
-
-    def items(self):
-        return [
-            "home",
-            "login",
-            "contact",
-        ]
-
-    def location(self, item):
-        return reverse(item)
