@@ -19,11 +19,11 @@ from django.conf import settings
 from django.conf.urls.static import static
 from portfolio.views import *
 from django.contrib.sitemaps.views import sitemap
-from app.sitemaps import StaticViewSitemap
+# from app.sitemaps import StaticViewSitemap
 
-sitemaps = {
-    "static": StaticViewSitemap,
-}
+# sitemaps = {
+#     "static": StaticViewSitemap,
+# }
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -35,7 +35,7 @@ urlpatterns = [
     path('admin_dashboard/', admin_dashboard),
     path('admin_dashboard/clear', clear_expired),
     path('publish/', publish),
-    path("sitemap.xml", sitemap, {"sitemaps": sitemaps}, name="sitemap"),
+    # path("sitemap.xml", sitemap, {"sitemaps": sitemaps}, name="sitemap"),
     path('payment/<str:plan>', subscribe),
     path('kashier/webhook/<str:plan>/<str:slug>', kashier_webhook),
     path('activate/code', publish_code),
