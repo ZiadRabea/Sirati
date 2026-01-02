@@ -27,7 +27,7 @@ DEBUG = False
 
 ALLOWED_HOSTS = ["*"]
 
-
+SITE_ID = 1
 # Application definition
 
 INSTALLED_APPS = [
@@ -41,7 +41,9 @@ INSTALLED_APPS = [
     'django_filters',
     'portfolio',
     'markdown_deux',
-    'widget_tweaks'
+    'widget_tweaks',
+    "django.contrib.sites",
+    "django.contrib.sitemaps"
 ]
 
 MIDDLEWARE = [

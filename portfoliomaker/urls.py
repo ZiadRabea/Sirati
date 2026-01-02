@@ -18,18 +18,24 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from portfolio.views import *
+from django.contrib.sitemaps.views import sitemap
+from app.sitemaps import StaticViewSitemap
 
+sitemaps = {
+    "static": StaticViewSitemap,
+}
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', home),
+    path('', home, name="home"),
     path('error/', error),
-    path('contact/', contact_view),
+    path('contact/', contact_view, name="contact"),
     path('refund-policy/', refund_policy),
     # path("stress-test/create-report/", stress_test_create_report, name="stress_test_create_report"),
     path('admin_dashboard/', admin_dashboard),
     path('admin_dashboard/clear', clear_expired),
     path('publish/', publish),
+    path("sitemap.xml", sitemap, {"sitemaps": sitemaps}, name="sitemap"),
     path('payment/<str:plan>', subscribe),
     path('kashier/webhook/<str:plan>/<str:slug>', kashier_webhook),
     path('activate/code', publish_code),
