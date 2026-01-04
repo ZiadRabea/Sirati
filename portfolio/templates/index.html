@@ -43,6 +43,16 @@
       display: block;
       object-fit: contain;
     }
+
+    /* Currency switcher */
+    .currency-btn {
+      padding: .35rem .6rem;
+      border-radius: .5rem;
+    }
+    .currency-btn.active {
+      box-shadow: 0 4px 10px rgba(99,102,241,0.12);
+      transform: translateY(-1px);
+    }
   </style>
 </head>
 
@@ -52,13 +62,22 @@
 <header class="w-full py-6 fixed top-0 left-0 bg-white backdrop-blur-lg bg-opacity-80 shadow-sm z-50">
   <div class="container mx-auto px-6 flex justify-between items-center">
     <h1 class="text-2xl font-bold text-indigo-600">Sirati</h1>
-    {%if not user.is_authenticated%}
-      <a href="/accounts/sign_up" class="px-6 py-2 bg-indigo-600 text-white rounded-full shadow hover:bg-indigo-700 transition">Get Started</a>
-    {%elif not user.profile.website%}
-      <a href="/create" class="px-6 py-2 bg-indigo-600 text-white rounded-full shadow hover:bg-indigo-700 transition">Complete Registration</a>
-    {%else%}
-      <a href="/{{user.profile.website.unique_name}}" class="px-6 py-2 bg-indigo-600 text-white rounded-full shadow hover:bg-indigo-700 transition">Your Portfolio</a>
-    {%endif%}
+
+    <!-- Currency switcher + Auth CTA -->
+    <div class="flex items-center gap-4">
+      <div id="currency-switcher" class="flex items-center gap-2 bg-gray-100 p-1 rounded-full">
+        <button id="btn-egp" class="currency-btn text-sm font-medium">EGP</button>
+        <button id="btn-usd" class="currency-btn text-sm font-medium">USD</button>
+      </div>
+
+      {%if not user.is_authenticated%}
+        <a href="/accounts/sign_up" class="px-6 py-2 bg-indigo-600 text-white rounded-full shadow hover:bg-indigo-700 transition">Get Started</a>
+      {%elif not user.profile.website%}
+        <a href="/create" class="px-6 py-2 bg-indigo-600 text-white rounded-full shadow hover:bg-indigo-700 transition">Complete Registration</a>
+      {%else%}
+        <a href="/{{user.profile.website.unique_name}}" class="px-6 py-2 bg-indigo-600 text-white rounded-full shadow hover:bg-indigo-700 transition">Your Portfolio</a>
+      {%endif%}
+    </div>
   </div>
 </header>
 
@@ -182,7 +201,7 @@
           <i style='color: rgb(79 70 229 / var(--tw-text-opacity, 1)); font-size:30px;' class='fas fa-usd'></i>
         </div>
         <h3 class="text-xl font-semibold mb-3">Affordable</h3>
-        <p class="text-gray-600">Flexible plans including monthly, annual, or lifetime purchase.</p>
+        <p class="text-gray-600">Flexible plans including monthly, annual, or quarterly subscriptions.</p>
       </div>
 
     </div>
@@ -199,7 +218,11 @@
       <!-- MONTHLY -->
       <div class="p-10 rounded-3xl shadow-xl bg-gray-50 hover:shadow-2xl transition">
         <h3 class="text-2xl font-semibold mb-4">Monthly</h3>
-        <p class="text-5xl font-bold text-indigo-600 mb-4">EGP 50<span style="font-size: 8px;">(≈$1)</span></p>
+        <!-- note: data-egp stores the base EGP price (used for conversion) -->
+        <p class="text-5xl font-bold text-indigo-600 mb-4">
+          <span class="price" data-egp="50"></span>
+          <span class="text-sm text-gray-500 price-approx"></span>
+        </p>
         <p class="text-gray-600 mb-8">Perfect for short-term projects</p>
         <a class="block bg-indigo-600 text-white py-4 rounded-full shadow hover:bg-indigo-700 transition cursor-pointer">
           Subscribe
@@ -209,7 +232,10 @@
       <!-- ANNUAL -->
       <div class="p-12 rounded-3xl shadow-2xl bg-indigo-600 text-white scale-105">
         <h3 class="text-2xl font-semibold mb-4">Annual</h3>
-        <p class="text-5xl font-bold mb-4">ُEGP 500<span style="font-size: 8px;">(≈$10)</span></p>
+        <p class="text-5xl font-bold mb-4">
+          <span class="price" data-egp="500"></span>
+          <span class="text-sm text-indigo-100 price-approx"></span>
+        </p>
         <p class="text-indigo-100 mb-8">Best value — save 2 MONTHS compared to monthly.</p>
         <a class="block bg-white text-indigo-700 py-4 rounded-full shadow hover:bg-indigo-50 transition cursor-pointer">
           Subscribe Yearly
@@ -219,8 +245,11 @@
       <!-- ONE-TIME -->
       <div class="p-10 rounded-3xl shadow-xl bg-gray-50 hover:shadow-2xl transition">
         <h3 class="text-2xl font-semibold mb-4">Quarterly</h3>
-        <p class="text-5xl font-bold text-indigo-600 mb-4">EGP 150<span style="font-size: 8px;">(≈$3)</span></p>
-        <p class="text-gray-600 mb-8">10 yaers access. Own your portfolio forever.</p>
+        <p class="text-5xl font-bold text-indigo-600 mb-4">
+          <span class="price" data-egp="150"></span>
+          <span class="text-sm text-gray-500 price-approx"></span>
+        </p>
+        <p class="text-gray-600 mb-8">10 years access. Own your portfolio forever.</p>
         <a class="block bg-indigo-600 text-white py-4 rounded-full shadow hover:bg-indigo-700 transition cursor-pointer">
           Buy Forever
         </a>
@@ -230,7 +259,6 @@
   </div>
 </section>
 
-<!-- FOOTER -->
 <!-- FOOTER -->
 <footer class="py-16 bg-gray-900 text-gray-300">
   <div class="container mx-auto px-6 text-center">
@@ -260,7 +288,6 @@
   </div>
 </footer>
 
-
 <!-- CAROUSEL SCRIPT -->
 <script>
   const slides = document.querySelectorAll('.fade-slide');
@@ -271,6 +298,90 @@
     index = (index + 1) % slides.length;
     slides[index].classList.add('active');
   }, 3500);
+</script>
+
+<!-- CURRENCY SWITCHER SCRIPT -->
+<script>
+  (function() {
+    // Base conversion rate (1 USD = X EGP). Update this if you want a different rate,
+    // or replace with a live fetch if needed.
+    const conversionRate = 50; // 1 USD = 50 EGP (matches the approx values in the page)
+
+    const STORAGE_KEY = 'preferredCurrency';
+    const btnEgp = document.getElementById('btn-egp');
+    const btnUsd = document.getElementById('btn-usd');
+
+    function formatEGP(value) {
+      // show as integer EGP, localized
+      return new Intl.NumberFormat('en-EG').format(Math.round(value)) + ' EGP';
+    }
+    function formatUSD(value) {
+      // show as currency with 2 decimals
+      return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 }).format(value);
+    }
+
+    function setActiveButton(currency) {
+      if (currency === 'EGP') {
+        btnEgp.classList.add('active', 'bg-white');
+        btnEgp.classList.remove('bg-transparent');
+        btnUsd.classList.remove('active', 'bg-white');
+      } else {
+        btnUsd.classList.add('active', 'bg-white');
+        btnUsd.classList.remove('bg-transparent');
+        btnEgp.classList.remove('active', 'bg-white');
+      }
+    }
+
+    function updatePrices(currency) {
+      document.querySelectorAll('.price').forEach(el => {
+        const baseEgp = parseFloat(el.dataset.egp || '0');
+        const approxEl = el.parentElement.querySelector('.price-approx');
+
+        if (currency === 'EGP') {
+          el.innerHTML = `<span>${formatEGP(baseEgp)}</span>`;
+          if (approxEl) {
+            const approxUsd = (baseEgp / conversionRate);
+            approxEl.innerHTML = `<span>≈ ${formatUSD(approxUsd)}</span>`;
+          }
+        } else {
+          const usd = baseEgp / conversionRate;
+          el.innerHTML = `<span>${formatUSD(usd)}</span>`;
+          if (approxEl) {
+            approxEl.innerHTML = `<span>≈ ${Math.round(baseEgp)} EGP</span>`;
+          }
+        }
+      });
+    }
+
+    // Initialize from localStorage or default to EGP
+    const saved = localStorage.getItem(STORAGE_KEY);
+    const initialCurrency = (saved === 'USD' || saved === 'EGP') ? saved : 'EGP';
+    setActiveButton(initialCurrency);
+    updatePrices(initialCurrency);
+
+    // Event listeners
+    btnEgp.addEventListener('click', () => {
+      localStorage.setItem(STORAGE_KEY, 'EGP');
+      setActiveButton('EGP');
+      updatePrices('EGP');
+    });
+    btnUsd.addEventListener('click', () => {
+      localStorage.setItem(STORAGE_KEY, 'USD');
+      setActiveButton('USD');
+      updatePrices('USD');
+    });
+
+    // Accessibility: keyboard toggle (left/right)
+    document.getElementById('currency-switcher').addEventListener('keydown', (e) => {
+      const current = localStorage.getItem(STORAGE_KEY) || 'EGP';
+      if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+        const next = current === 'EGP' ? 'USD' : 'EGP';
+        localStorage.setItem(STORAGE_KEY, next);
+        setActiveButton(next);
+        updatePrices(next);
+      }
+    });
+  })();
 </script>
 
 </body>

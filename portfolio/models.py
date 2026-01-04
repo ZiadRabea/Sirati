@@ -4,7 +4,7 @@ from cloudinary_storage.storage import MediaCloudinaryStorage
 from django.contrib.postgres.fields import ArrayField
 from django.utils.crypto import get_random_string
 from django.core.validators import MaxValueValidator, MinValueValidator
-
+from datetime import date
 # Create your models here.
 
 
@@ -14,13 +14,13 @@ class Website(models.Model):
     is_active = models.BooleanField(default=False)
     activation_deadline = models.DateField(null=True, blank=True)
     activation_margin = models.DateField(null=True, blank=True)
+    birthday = models.DateField()
     cv_url = models.URLField(null=True, blank=True)
     full_name = models.CharField(max_length=100)
     profile_pic = models.ImageField(upload_to="profile_pictures", storage=MediaCloudinaryStorage)
     current_job = models.CharField(max_length=500)
     about = models.TextField(max_length=2000)
     email = models.EmailField()
-    age = models.IntegerField()
     analytics = models.CharField(max_length=200, null=True, blank=True)
     adsense = models.CharField(max_length=200, null=True, blank=True)
     phone = models.CharField(max_length=20, null=True, blank=True)
@@ -29,7 +29,17 @@ class Website(models.Model):
     tele = models.URLField(blank=True, null=True)
     wp = models.URLField(null=True, blank=True)
 
-
+    @property
+    def age(self):
+        """Return age in years (int) or None if birthday not set."""
+        if not self.birthday:
+            return None
+        today = date.today()
+        # compute difference in years, subtract 1 if birthday hasn't occurred yet this year
+        years = today.year - self.birthday.year
+        has_had_birthday = (today.month, today.day) >= (self.birthday.month, self.birthday.day)
+        return years if has_had_birthday else years - 1
+    
 class Skill(models.Model):
     skill = models.CharField(max_length=100)
     mastery = models.IntegerField(validators=[

@@ -438,7 +438,7 @@
   {# --- Publish request: only show when not active and owner is viewing --- #}
   {% if not website.is_active and user.profile == website.user %}
     <a style="text-decoration:none;color:none;" href="/publish" class="publish-btn" aria-label="Request publish" title="Request publish" aria-busy="false">
-      <span class="label" aria-hidden="true">Request publish</span>
+      <span class="label" aria-hidden="true">Publish</span>
       <i class="fas fa-paper-plane" aria-hidden="true"></i>
     </a>
   {% endif %}
