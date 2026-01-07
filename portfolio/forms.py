@@ -6,6 +6,7 @@ class CreateWebsite(ModelForm):
     class Meta:
         model = Website
         fields = '__all__'
+        exclude = ['unique_name']
 
 class AddSkill(ModelForm):
     class Meta:
@@ -39,7 +40,7 @@ class EditWebsite(ModelForm):
     class Meta:
         model = Website
         fields = '__all__'
-        exclude = ['unique_name', 'birthday', 'full_name', 'is_active']
+        exclude = ['unique_name', 'birthday', 'is_active']
 
 class Create_Key(ModelForm):
     class Meta:

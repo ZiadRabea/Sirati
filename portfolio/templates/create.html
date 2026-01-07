@@ -120,11 +120,26 @@
 
       .hidden { display:none !important; }
 
-      /* small screens */
       @media only screen and (max-width: 950px) {
-        body { flex-direction: column; align-items: stretch; padding: 10px; }
-        .form, .container { flex: none; width: 100%; height: 50%; }
-        .upload-card { gap: 12px; }
+        body { 
+          flex-direction: column; 
+          align-items: stretch; 
+          padding: 10px; 
+        }
+
+        .form { 
+          flex: none; 
+          width: 100%; 
+          height: 100vh; /* full viewport height */
+        }
+
+        .container { 
+          display: none !important; /* hide iframe completely on mobile */
+        }
+
+        .upload-card { 
+          gap: 12px; 
+        }
       }
     </style>
   </head>
@@ -133,12 +148,6 @@
       <h2>Create New</h2>
       <form action="#" method="post" enctype="multipart/form-data" id="createForm">
         {% csrf_token %}
-
-        <label for="name">Website-Handle</label>
-        {{ form.unique_name }}
-
-        <label for="name">Full Name</label>
-        {{ form.full_name }}
 
         <label for="profile_picture">Profile Picture</label>
 
@@ -179,8 +188,6 @@
         {{ form.current_job }}
         <label for="email">Email</label>
         {{ form.email }}
-        <label for="phone" style="color:darkgray">Phone</label>
-        {{ form.phone }}
         <label for="intro">Self-Introduction</label>
         {{ form.about }}
 
