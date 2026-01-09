@@ -447,7 +447,13 @@
     <img src="{{website.profile_pic.url}}" alt="Profile photo of {{ website.full_name }}">
     <h1>{{website.user.user.first_name}} {{website.user.user.last_name}}</h1>
     <p>{{website.current_job}}</p>
-    <a href="{{website.cv_url}}" download>Download CV</a>
+   
+    {%if website.cv_url%}
+      <a href="{{website.cv_url}}" download>Download CV</a>
+    {%else%}
+      <a href="#contactForm">Contact Me</a>
+    {%endif%}
+    
     {% if user.profile == website.user %}
       <a href="/{{website.unique_name}}/edit">Update Info<i class="fas fa-brush"></i></a>
     {% endif %}
