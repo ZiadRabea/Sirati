@@ -3,13 +3,12 @@
 <html lang="en" class="scroll-smooth">
 <head>
   <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-2Z4ZWSW8YW"></script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-2Z4WSW8YW"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-
-    gtag('config', 'G-2Z4ZWSW8YW');
+    gtag('config', 'G-2Z4WSW8YW');
   </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -63,6 +62,75 @@
       box-shadow: 0 4px 10px rgba(99,102,241,0.12);
       transform: translateY(-1px);
     }
+
+    /* CTA button: elegant animated gradient with subtle shimmer */
+    .cta-button {
+      position: relative;
+      overflow: hidden;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: .75rem;
+      padding: .9rem 1.6rem;
+      border-radius: 999px;
+      font-weight: 600;
+      letter-spacing: .01em;
+      transition: transform .18s ease, box-shadow .18s ease;
+      box-shadow: 0 8px 30px rgba(79,70,229,0.12);
+      background: linear-gradient(90deg, #5b21b6 0%, #7c3aed 50%, #4f46e5 100%);
+      color: white;
+    }
+    .cta-button:focus { outline: 3px solid rgba(99,102,241,0.18); outline-offset: 3px; }
+    .cta-button:hover { transform: translateY(-4px) scale(1.01); box-shadow: 0 12px 40px rgba(79,70,229,0.16); }
+
+    /* shimmer */
+    .cta-button::after {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -30%;
+      width: 40%;
+      height: 200%;
+      transform: rotate(25deg);
+      background: linear-gradient(120deg, rgba(255,255,255,0.12), rgba(255,255,255,0.06), rgba(255,255,255,0.12));
+      opacity: 0;
+      transition: opacity .4s ease, transform .7s ease;
+      filter: blur(8px);
+    }
+    .cta-button:hover::after { opacity: 1; transform: translateX(18rem) rotate(25deg); transition: transform .7s ease; }
+
+    .cta-subtext { display:block; font-size: .78rem; margin-top:.35rem; color: rgba(15,23,42,0.7); }
+
+    /* Testimonials */
+    .testimonials { --card-bg: rgba(255,255,255,0.9); }
+    .testimonial-card {
+      background: var(--card-bg);
+      border-radius: 1rem;
+      padding: 1.25rem;
+      box-shadow: 0 10px 30px rgba(15,23,42,0.06);
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+    .testimonial-card:hover { transform: translateY(-6px); box-shadow: 0 18px 40px rgba(15,23,42,0.08); }
+
+    .avatar-circle {
+      width: 48px;
+      height: 48px;
+      border-radius: 999px;
+      display:inline-grid;
+      place-items:center;
+      font-weight:700;
+      color: white;
+    }
+
+    /* Small testimonial slider dots */
+    .testimonial-dots button { width: 10px; height: 10px; border-radius: 999px; margin: 0 .25rem; opacity: .45; }
+    .testimonial-dots button.active { opacity: 1; transform: scale(1.08); }
+
+    /* Responsive tweaks */
+    @media (max-width: 767px) {
+      .cta-subtext { color: rgba(17,24,39,0.65); text-align:center; }
+      .hero-cta-wrap { display:flex; flex-direction:column; gap:.5rem; align-items:center; }
+    }
   </style>
 </head>
 
@@ -107,13 +175,27 @@
         Edit live, customize, and publish with a single click.
       </p>
 
-      <div class="mt-8 flex gap-4">
-        <a href="#pricing" class="px-8 py-4 bg-indigo-600 text-white text-lg rounded-full shadow-lg hover:bg-indigo-700 transition">
-          Pricing
-        </a>
-        <a href="#how" class="px-8 py-4 border border-gray-300 text-gray-700 text-[12px] sm:text-lg rounded-full hover:bg-gray-100 transition">
-          See How It Works
-        </a>
+      <div class="mt-8 flex gap-4 items-start hero-cta-wrap">
+        <!-- Animated primary CTA -->
+        {% if not user.is_authenticated %}
+          <a href="/accounts/sign_up" aria-label="Start now for free" class="cta-button" role="button">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path d="M3.172 10.828a4 4 0 015.656 0L12 14l3.172-3.172a4 4 0 115.656 5.656L12 24 3.172 15.828a4 4 0 010-5.656z" transform="scale(.8) translate(-2,-4)"/>
+            </svg>
+            <span>Start now — for free</span>
+          </a>
+          <!-- Subtext -->
+         <div class="ml-2">
+          <span class="cta-subtext">No credit card required</span>
+        </div>
+        {% elif not user.profile.website %}
+          <a href="/create" aria-label="Complete registration" class="cta-button" role="button">Complete Registration</a>
+        {% else %}
+          <a href="/{{user.profile.website.unique_name}}" aria-label="Open your portfolio" class="cta-button" role="button">Your Portfolio</a>
+        {% endif %}
+
+        <!-- Secondary action -->
+        <a href="#how" class="px-6 py-3 border border-gray-300 text-gray-700 text-[12px] sm:text-lg rounded-full hover:bg-gray-100 transition hidden sm:inline-flex">See How It Works</a>
       </div>
     </div>
 
@@ -121,11 +203,11 @@
     <div class="relative w-full hero-slider rounded-3xl overflow-hidden shadow-2xl hidden md:block">
 
       <img src="{%static 'imgs/img3.png'%}"
-           class="absolute inset-0 w-full h-full fade-slide active">
+           class="absolute inset-0 w-full h-full fade-slide active" alt="sirati preview 1">
       <img src="{%static 'imgs/img2.png'%}"
-           class="absolute inset-0 w-full h-full fade-slide">
+           class="absolute inset-0 w-full h-full fade-slide" alt="sirati preview 2">
       <img src="{%static 'imgs/img1.png'%}"
-           class="absolute inset-0 w-full h-full fade-slide">
+           class="absolute inset-0 w-full h-full fade-slide" alt="sirati preview 3">
     </div>
 
   </div>
@@ -143,7 +225,7 @@
       <!-- STEP 1 -->
       <div class="bg-gray-50 rounded-3xl p-10 shadow-lg hover:shadow-xl transition text-center">
         <img src="{%static 'imgs/step1.jpg'%}"
-             class="rounded-2xl mb-8 shadow-lg responsive-img">
+             class="rounded-2xl mb-8 shadow-lg responsive-img" alt="step fill">
         <h3 class="text-2xl font-semibold mb-3">Fill/Upload</h3>
         <p class="text-gray-600">Enter Your Information.</p>
       </div>
@@ -151,7 +233,7 @@
       <!-- STEP 2 -->
       <div class="bg-gray-50 rounded-3xl p-10 shadow-lg hover:shadow-xl transition text-center">
         <img src="{%static 'imgs/step2.jpg'%}"
-             class="rounded-2xl mb-8 shadow-lg responsive-img">
+             class="rounded-2xl mb-8 shadow-lg responsive-img" alt="preview customize">
         <h3 class="text-2xl font-semibold mb-3">Preview & Customize</h3>
         <p class="text-gray-600">See your portfolio live. Add Your Skills, Projects and Work Experience.</p>
       </div>
@@ -159,7 +241,7 @@
       <!-- STEP 3 -->
       <div class="bg-gray-50 rounded-3xl p-10 shadow-lg hover:shadow-xl transition text-center">
         <img src="{%static 'imgs/step3.jpg'%}"
-             class="rounded-2xl mb-8 shadow-lg responsive-img">
+             class="rounded-2xl mb-8 shadow-lg responsive-img" alt="publish share">
         <h3 class="text-2xl font-semibold mb-3">Publish & Share</h3>
         <p class="text-gray-600">Choose a plan and publish your portfolio instantly.</p>
       </div>
@@ -214,6 +296,76 @@
         <p class="text-gray-600">Flexible plans including monthly, annual, or quarterly subscriptions.</p>
       </div>
 
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS (Trust signals) -->
+<section id="testimonials" class="py-24 bg-white">
+  <div class="container mx-auto px-6">
+    <div class="max-w-3xl mx-auto text-center">
+      <h2 class="text-3xl md:text-4xl font-playfair font-bold text-gray-900 mb-4">What people say</h2>
+      <p class="text-gray-600 mb-10">Real stories from developers and designers using Sirati to get noticed.</p>
+    </div>
+
+    <div class="max-w-4xl mx-auto relative">
+      <!-- cards wrapper -->
+      <div class="grid grid-cols-1 gap-6 testimonial-wrapper">
+        <!-- Testimonial 1 -->
+        <figure class="testimonial-card fade-testimonial active" data-index="0" aria-hidden="false">
+          <blockquote class="text-gray-800 text-lg leading-relaxed" dir="rtl">“ ”</blockquote>
+          <figcaption class="mt-6 flex items-center gap-3">
+            <div class="avatar-circle bg-indigo-600">MH</div>
+            <div>
+              <div class="font-semibold">Mohammed H.</div>
+              <div class="text-sm text-gray-500">Agriculture Engineer — Cairo, Egypt</div>
+            </div>
+            <div class="ml-auto flex items-center gap-1 text-yellow-400">
+              <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i>
+            </div>
+          </figcaption>
+        </figure>
+
+        <!-- Testimonial 2 -->
+        <figure class="testimonial-card fade-testimonial" data-index="1" aria-hidden="true">
+          <blockquote class="text-gray-800 text-lg leading-relaxed" dir="rtl">“تجربة ممتازة, و وبالذات ميزة تعديل معرض أعمالي من الهاتف وفرت علي وقت و مجهود كتير”</blockquote>
+          <figcaption class="mt-6 flex items-center gap-3">
+            <div class="avatar-circle bg-indigo-400">KT</div>
+            <div>
+              <div class="font-semibold">Kerem T.</div>
+              <div class="text-sm text-gray-500">Software Engineer — Cairo, Egypt</div>
+            </div>
+            <div class="ml-auto flex items-center gap-1 text-yellow-400">
+              <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+            </div>
+          </figcaption>
+        </figure>
+
+        <!-- Testimonial 3 -->
+        <figure class="testimonial-card fade-testimonial" data-index="2" aria-hidden="true">
+          <blockquote class="text-gray-800 text-lg leading-relaxed">“التجربة كانت سلسة و سهلة بزاف — نقدر نقول 9 من 10 وأكثر!”</blockquote>
+          <figcaption class="mt-6 flex items-center gap-3">
+            <div class="avatar-circle bg-indigo-700">SB</div>
+            <div>
+              <div class="font-semibold">Soundous B.</div>
+              <div class="text-sm text-gray-500">Software Engineer — Setif, Algeria</div>
+            </div>
+            <div class="ml-auto flex items-center gap-1 text-yellow-400">
+              <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i>
+            </div>
+          </figcaption>
+        </figure>
+      </div>
+
+      <!-- dots / controls -->
+      <div class="mt-6 flex justify-center items-center testimonial-dots" role="tablist" aria-label="testimonial navigation">
+        <button class="w-3 h-3 rounded-full bg-gray-300 mx-1 active" aria-controls="testimonial-0" aria-selected="true"></button>
+        <button class="w-3 h-3 rounded-full bg-gray-300 mx-1" aria-controls="testimonial-1" aria-selected="false"></button>
+        <button class="w-3 h-3 rounded-full bg-gray-300 mx-1" aria-controls="testimonial-2" aria-selected="false"></button>
+      </div>
+
+      <!-- small trust line -->
+      <div class="mt-8 text-center text-gray-500 text-sm">Trusted by developers across MENA • No credit card to start</div>
     </div>
   </div>
 </section>
@@ -313,6 +465,54 @@
   }, 3500);
 </script>
 
+<!-- Testimonials carousel script -->
+<script>
+  (function() {
+    const items = document.querySelectorAll('.fade-testimonial');
+    const dots = document.querySelectorAll('.testimonial-dots button');
+    let tIndex = 0;
+    const show = (i) => {
+      items.forEach((it, idx) => {
+        if (idx === i) {
+          it.classList.add('active');
+          it.setAttribute('aria-hidden', 'false');
+        } else {
+          it.classList.remove('active');
+          it.setAttribute('aria-hidden', 'true');
+        }
+      });
+      dots.forEach((d, idx) => {
+        d.classList.toggle('active', idx === i);
+        d.setAttribute('aria-selected', idx === i ? 'true' : 'false');
+      });
+      tIndex = i;
+    };
+
+    // initial
+    show(0);
+
+    // auto-rotate
+    let timer = setInterval(() => {
+      show((tIndex + 1) % items.length);
+    }, 5000);
+
+    // dots click
+    dots.forEach((d, idx) => {
+      d.addEventListener('click', () => {
+        clearInterval(timer);
+        show(idx);
+        timer = setInterval(() => show((tIndex + 1) % items.length), 5000);
+      });
+    });
+
+    // accessibility: allow arrow keys to change testimonial when dots focused
+    document.querySelector('.testimonial-dots').addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') show((tIndex - 1 + items.length) % items.length);
+      if (e.key === 'ArrowRight') show((tIndex + 1) % items.length);
+    });
+  })();
+</script>
+
 <!-- CURRENCY SWITCHER SCRIPT -->
 <script>
   (function() {
@@ -396,6 +596,5 @@
     });
   })();
 </script>
-
 </body>
 </html>
