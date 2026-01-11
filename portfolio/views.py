@@ -471,7 +471,7 @@ def contact_view(request):
             subject=f"Sirati Contact — {name}",
             message=f"From: {email}\n\n{message}",
             from_email=email,
-            recipient_list=["support@opindustries.space"],
+            recipient_list=["support@sirati.space"],
         )
         messages.success(request, 'Thank you for reaching out. Our team will contact you within 24-48 hours.')
         return redirect("/contact")
