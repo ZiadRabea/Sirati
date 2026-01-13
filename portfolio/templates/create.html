@@ -5,7 +5,7 @@
     <title>Sirati | Create New</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="{% static 'imgs/alignos.jpeg' %}" type="image/png">
-    <link rel="icon" type="image/png" href="{% static 'imgs/logo.png' %}">
+    <link rel="icon" type="image/png" href="{%static 'imgs/logo.png'%}">
     <style>
       /* --- base reset from your file --- */
       * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -16,11 +16,9 @@
         gap: 20px;
         padding: 20px;
         height: 100vh;
-        overflow: auto; /* changed from hidden -> allows page scroll when needed */
+        overflow: hidden;
         background: #f4f6f8;
       }
-
-      /* Form container: scrollable area that fits inside viewport */
       .form {
         flex: 1;
         background-color: #fff;
@@ -28,13 +26,7 @@
         box-shadow: 0 6px 20px rgba(18, 38, 63, 0.08);
         padding: 28px;
         overflow-y: auto;
-
-        /* Ensure it fits inside the viewport without being clipped by body padding */
-        max-height: calc(100vh - 40px); /* subtract body padding top + bottom (20 + 20) */
-        padding-bottom: 110px; /* reserve space so sticky submit doesn't cover last input */
-        scroll-padding-bottom: 40px;
       }
-
       .container {
         flex: 1;
         background-color: #fff;
@@ -42,34 +34,12 @@
         box-shadow: 0 6px 20px rgba(18, 38, 63, 0.08);
         overflow: hidden;
       }
-
       iframe { border: none; width: 100%; height: 100%; }
       .form h2 { margin-bottom: 18px; font-weight: 700; color: #12263f; }
 
       .form label { display:block; font-weight:600; margin-top:14px; color:#2b3948; }
-      .form input, .form textarea, .form select { width:100%; padding:10px; margin-top:6px; border:1px solid #e2e8ee; border-radius:8px; font-size:14px; background:#fbfdff; }
-      
-      /* submit button: sticky so it's always visible within the form's scroll area */
-      .form .submit-row {
-        position: sticky;
-        bottom: 20px; /* distance from bottom of the form scroll area */
-        width: 100%;
-        display: flex;
-        justify-content: flex-end;
-        gap: 12px;
-        padding-top: 10px;
-        background: linear-gradient(transparent, rgba(255,255,255,0.95)); /* subtle fade so last inputs aren't hidden */
-      }
-      .form button[type="submit"] { 
-        display: inline-block; 
-        background: linear-gradient(90deg,#2ab27b,#2fa170); 
-        color:#fff; 
-        border:none; 
-        border-radius:10px; 
-        padding:10px 16px; 
-        font-size:16px; 
-        cursor:pointer; 
-      }
+      .form input, .form textarea { width:100%; padding:10px; margin-top:6px; border:1px solid #e2e8ee; border-radius:8px; font-size:14px; background:#fbfdff; }
+      .form button { display:block; background:linear-gradient(90deg,#2ab27b,#2fa170); color:#fff; border:none; border-radius:10px; padding:10px 16px; font-size:16px; cursor:pointer; margin-top:20px; }
 
       /* --- Image uploader styles --- */
       .image-uploader {
@@ -90,7 +60,6 @@
         border: 1px dashed rgba(45, 55, 72, 0.12);
         background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(250,252,255,0.8));
         transition: border-color .18s ease, box-shadow .18s ease;
-        cursor: pointer;
       }
       .upload-card.dragover {
         border-color: #2ab27b;
@@ -161,9 +130,7 @@
         .form { 
           flex: none; 
           width: 100%; 
-          /* on small screens allow full viewport height but keep padding-bottom so submit is visible */
-          max-height: calc(100vh - 20px);
-          padding-bottom: 140px;
+          height: 100vh; /* full viewport height */
         }
 
         .container { 
@@ -172,10 +139,6 @@
 
         .upload-card { 
           gap: 12px; 
-        }
-
-        .form .submit-row {
-          bottom: 12px;
         }
       }
     </style>
@@ -226,11 +189,9 @@
       <label for="intro">Self-Introduction</label>
       {{ form.about }}
 
-      <!-- sticky submit row -->
-      <div class="submit-row">
-        <button type="submit">Submit</button>
-      </div>
+      <button type="submit">Submit</button>
     </form>
+
 
     <div class="container">
       <iframe id="displayframe"></iframe>
@@ -283,20 +244,22 @@
           reader.onload = function (e) {
             previewImg.src = e.target.result;
             removeBtn.classList.remove("hidden");
-            ensureSubmitVisible(); // keep submit in view if necessary
           };
           reader.readAsDataURL(file);
         }
 
         // Reset to placeholder or existing server image if present
         function resetPreview() {
+          // If server had an image originally, it remains in previewImg.src when page loaded.
+          // But if user removed, clear input and set to placeholder
           fileInput.value = "";
           fileInfo.textContent = "";
+          // Show placeholder if the current src contains a data URL or empty
           if (!previewImg.src || previewImg.src.startsWith("data:")) {
+            // fallback placeholder (you may replace path)
             previewImg.src = "{% static 'imgs/default-avatar.png' %}";
           }
           removeBtn.classList.add("hidden");
-          ensureSubmitVisible();
         }
 
         // Click behavior - open file dialog
@@ -341,11 +304,13 @@
           if (!dt || !dt.files || dt.files.length === 0) return;
           const file = dt.files[0];
           // put it into the hidden file input so form submission works.
+          // Note: setting fileInput.files is read-only in some browsers; instead we construct a DataTransfer if needed.
           try {
             const dataTransfer = new DataTransfer();
             dataTransfer.items.add(file);
             fileInput.files = dataTransfer.files;
           } catch (err) {
+            // fallback: we can't programmatically set fileInput.files in some environments; just preview (form submission might not include file)
             console.warn("Couldn't assign dropped file to input programmatically; preview will still work but form may not submit file in this browser.");
           }
           showFile(file);
@@ -361,39 +326,28 @@
         // Remove button clears value + preview
         removeBtn.addEventListener("click", function (e) {
           e.preventDefault();
+          // If you want to signal the server to remove an existing stored image, add a hidden input like:
+          // <input type="checkbox" name="remove_profile_pic" id="remove_profile_pic" value="1" class="hidden">
+          // and set it here: document.getElementById('remove_profile_pic').checked = true;
           resetPreview();
         });
 
-        // small tip button for cropping guidance
+        // small tip button for cropping guidance (just shows an alert here; you can replace with a modal)
         document.getElementById("cropHintBtn").addEventListener("click", function (e) {
           e.preventDefault();
           alert("Tip: upload a square image (e.g. 400×400 px) for the best result. You can also crop in your photo editor before uploading.");
         });
 
-        // Initialize preview state
+        // Initialize: if there is already a file preview (from server), show its filename? We can't know file size from remote.
         (function init() {
+          // If previewImg src is a static placeholder, keep remove button hidden
           if (previewImg && previewImg.src && !previewImg.src.includes("default-avatar")) {
             removeBtn.classList.remove("hidden");
+            // fileInfo remains empty because we don't have metadata
           } else {
             removeBtn.classList.add("hidden");
           }
         })();
-
-        // helper: ensure submit visible when form content changes
-        function ensureSubmitVisible() {
-          try {
-            const formEl = document.querySelector('.form');
-            const btn = document.querySelector('.form button[type="submit"]');
-            if (!formEl || !btn) return;
-            // scroll so button is visible inside the form scroll container
-            btn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-          } catch (e) {
-            // ignore
-          }
-        }
-
-        // call ensure submit on resize to help small viewports
-        window.addEventListener('resize', ensureSubmitVisible);
 
       })();
     </script>
