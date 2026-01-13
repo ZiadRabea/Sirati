@@ -144,56 +144,54 @@
     </style>
   </head>
   <body>
-    <div class="form">
+    <form class="form" action="#" method="post" enctype="multipart/form-data" id="createForm">
+      {% csrf_token %}
       <h2>Create New</h2>
-      <form action="#" method="post" enctype="multipart/form-data" id="createForm">
-        {% csrf_token %}
+      <label for="profile_picture">Profile Picture</label>
 
-        <label for="profile_picture">Profile Picture</label>
+      <!-- Keep the original Django widget in the template (hidden). JS will connect to it.
+            If your field has a different id, adjust FILE_INPUT_ID in the script below. -->
+      {{ form.profile_pic }}
 
-        <!-- Keep the original Django widget in the template (hidden). JS will connect to it.
-             If your field has a different id, adjust FILE_INPUT_ID in the script below. -->
-        {{ form.profile_pic }}
+      <!-- Custom visually-pleasing uploader -->
+      <div class="image-uploader" aria-hidden="false">
+        <div id="uploadCard" class="upload-card" tabindex="0" role="button" aria-label="Upload profile picture">
+          <div class="preview-box" id="previewBox" aria-hidden="true">
+            <!-- show existing image if any -->
+            {% if form.instance and form.instance.profile_pic %}
+              <img src="{{ form.instance.profile_pic.url }}" alt="Current profile picture" id="previewImg">
+            {% else %}
+              <!-- placeholder SVG -->
+              <img src="{% static 'imgs/default-avatar.png' %}" alt="placeholder" id="previewImg">
+            {% endif %}
+          </div>
 
-        <!-- Custom visually-pleasing uploader -->
-        <div class="image-uploader" aria-hidden="false">
-          <div id="uploadCard" class="upload-card" tabindex="0" role="button" aria-label="Upload profile picture">
-            <div class="preview-box" id="previewBox" aria-hidden="true">
-              <!-- show existing image if any -->
-              {% if form.instance and form.instance.profile_pic %}
-                <img src="{{ form.instance.profile_pic.url }}" alt="Current profile picture" id="previewImg">
-              {% else %}
-                <!-- placeholder SVG -->
-                <img src="{% static 'imgs/default-avatar.png' %}" alt="placeholder" id="previewImg">
-              {% endif %}
+          <div class="upload-meta">
+            <p id="metaTitle">Drag & drop an image here, or click <span style="font-weight:800; color:#2ab27b">Browse</span></p>
+            <div class="upload-actions">
+              <button type="button" id="browseBtn" class="btn-ghost">Browse</button>
+              <button type="button" id="removeBtn" class="btn-ghost {% if not form.instance.profile_pic %}hidden{% endif %}">Remove</button>
+              <button type="button" id="cropHintBtn" class="btn-ghost">Tip</button>
             </div>
-
-            <div class="upload-meta">
-              <p id="metaTitle">Drag & drop an image here, or click <span style="font-weight:800; color:#2ab27b">Browse</span></p>
-              <div class="upload-actions">
-                <button type="button" id="browseBtn" class="btn-ghost">Browse</button>
-                <button type="button" id="removeBtn" class="btn-ghost {% if not form.instance.profile_pic %}hidden{% endif %}">Remove</button>
-                <button type="button" id="cropHintBtn" class="btn-ghost">Tip</button>
-              </div>
-              <div class="file-info" id="fileInfo"><!-- filename + size goes here --></div>
-            </div>
+            <div class="file-info" id="fileInfo"><!-- filename + size goes here --></div>
           </div>
         </div>
+      </div>
 
-        <label for="age">Birthday</label>
-        <input type="date" name="birthday" required>
-        <label for="background_image" style="color:darkgray">CV URL</label>
-        {{ form.cv_url }}
-        <label for="current_job">Job Title</label>
-        {{ form.current_job }}
-        <label for="email">Email</label>
-        {{ form.email }}
-        <label for="intro">Self-Introduction</label>
-        {{ form.about }}
+      <label for="age">Birthday</label>
+      <input type="date" name="birthday" required>
+      <label for="background_image" style="color:darkgray">CV URL</label>
+      {{ form.cv_url }}
+      <label for="current_job">Job Title</label>
+      {{ form.current_job }}
+      <label for="email">Email</label>
+      {{ form.email }}
+      <label for="intro">Self-Introduction</label>
+      {{ form.about }}
 
-        <button type="submit">Submit</button>
-      </form>
-    </div>
+      <button type="submit">Submit</button>
+    </form>
+
 
     <div class="container">
       <iframe id="displayframe"></iframe>
