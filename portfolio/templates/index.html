@@ -161,6 +161,11 @@
     .fade-testimonial[aria-hidden="true"] {
       visibility: hidden;
     }
+    @media (min-width: 400px) { 
+      .navbtn{
+        display: none;
+      }
+    }
   </style>
 </head>
 
@@ -179,11 +184,11 @@
       </div>
 
       {%if not user.is_authenticated%}
-        <a href="/accounts/sign_up" class="px-6 py-2 bg-indigo-600 text-white rounded-full shadow hover:bg-indigo-700 transition">Start Free</a>
+        <a href="/accounts/sign_up" class="navbtn px-6 py-2 bg-indigo-600 text-white rounded-full shadow hover:bg-indigo-700 transition">Start Free</a>
       {%elif not user.profile.website%}
-        <a href="/create" class="px-6 py-2 bg-indigo-600 text-white rounded-full shadow hover:bg-indigo-700 transition">Complete Registration</a>
+        <a href="/create" class="navbtn px-6 py-2 bg-indigo-600 text-white rounded-full shadow hover:bg-indigo-700 transition">Complete Registration</a>
       {%else%}
-        <a href="/{{user.profile.website.unique_name}}" class="px-6 py-2 bg-indigo-600 text-white rounded-full shadow hover:bg-indigo-700 transition">Your Portfolio</a>
+        <a href="/{{user.profile.website.unique_name}}" class="navbtn px-6 py-2 bg-indigo-600 text-white rounded-full shadow hover:bg-indigo-700 transition">Your Portfolio</a>
       {%endif%}
     </div>
   </div>
