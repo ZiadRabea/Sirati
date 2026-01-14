@@ -131,6 +131,36 @@
       .cta-subtext { color: rgba(17,24,39,0.65); text-align:center; }
       .hero-cta-wrap { display:flex; flex-direction:column; gap:.5rem; align-items:center; }
     }
+    /* Testimonials: stack items and animate fade/slide */
+    .testimonial-wrapper {
+      position: relative;    /* stack children absolutely */
+      min-height: 1px;       /* will be set by JS to real height */
+    }
+
+    .fade-testimonial {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity .5s ease, transform .45s ease;
+      pointer-events: none;   /* inactive cards not interactive */
+      z-index: 1;
+    }
+
+    /* visible card */
+    .fade-testimonial.active {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+      z-index: 2;
+    }
+
+    /* keep hidden ones out of accessibility flow */
+    .fade-testimonial[aria-hidden="true"] {
+      visibility: hidden;
+    }
   </style>
 </head>
 
@@ -465,51 +495,67 @@
 
 <!-- Testimonials carousel script -->
 <script>
-  (function() {
-    const items = document.querySelectorAll('.fade-testimonial');
-    const dots = document.querySelectorAll('.testimonial-dots button');
-    let tIndex = 0;
-    const show = (i) => {
-      items.forEach((it, idx) => {
-        if (idx === i) {
-          it.classList.add('active');
-          it.setAttribute('aria-hidden', 'false');
-        } else {
-          it.classList.remove('active');
-          it.setAttribute('aria-hidden', 'true');
-        }
-      });
-      dots.forEach((d, idx) => {
-        d.classList.toggle('active', idx === i);
-        d.setAttribute('aria-selected', idx === i ? 'true' : 'false');
-      });
-      tIndex = i;
-    };
+(function() {
+  const wrapper = document.querySelector('.testimonial-wrapper');
+  const items = document.querySelectorAll('.fade-testimonial');
+  const dots = document.querySelectorAll('.testimonial-dots button');
+  if (!wrapper || items.length === 0) return;
 
-    // initial
-    show(0);
+  let tIndex = 0;
 
-    // auto-rotate
-    let timer = setInterval(() => {
-      show((tIndex + 1) % items.length);
-    }, 5000);
+  // Ensure wrapper has the right min-height so layout doesn't collapse when
+  // we absolutely-position children. Use tallest card height.
+  function setWrapperHeight(){
+    const maxH = Array.from(items).reduce((m, el) => Math.max(m, el.offsetHeight), 0);
+    wrapper.style.minHeight = (maxH || 220) + 'px'; // fallback 220px
+  }
+  setWrapperHeight();
+  window.addEventListener('resize', setWrapperHeight);
 
-    // dots click
-    dots.forEach((d, idx) => {
-      d.addEventListener('click', () => {
-        clearInterval(timer);
-        show(idx);
-        timer = setInterval(() => show((tIndex + 1) % items.length), 5000);
-      });
+  const show = (i) => {
+    items.forEach((it, idx) => {
+      if (idx === i) {
+        it.classList.add('active');
+        it.setAttribute('aria-hidden', 'false');
+      } else {
+        it.classList.remove('active');
+        it.setAttribute('aria-hidden', 'true');
+      }
     });
+    dots.forEach((d, idx) => {
+      d.classList.toggle('active', idx === i);
+      d.setAttribute('aria-selected', idx === i ? 'true' : 'false');
+    });
+    tIndex = i;
+  };
 
-    // accessibility: allow arrow keys to change testimonial when dots focused
-    document.querySelector('.testimonial-dots').addEventListener('keydown', (e) => {
+  // initial
+  show(0);
+
+  // auto-rotate
+  let timer = setInterval(() => show((tIndex + 1) % items.length), 5000);
+
+  // dots click
+  dots.forEach((d, idx) => {
+    d.addEventListener('click', () => {
+      clearInterval(timer);
+      show(idx);
+      timer = setInterval(() => show((tIndex + 1) % items.length), 5000);
+    });
+  });
+
+  // make dots container keyboard-focusable and allow arrow nav
+  const dotsWrap = document.querySelector('.testimonial-dots');
+  if (dotsWrap) {
+    dotsWrap.setAttribute('tabindex', '0');
+    dotsWrap.addEventListener('keydown', (e) => {
       if (e.key === 'ArrowLeft') show((tIndex - 1 + items.length) % items.length);
       if (e.key === 'ArrowRight') show((tIndex + 1) % items.length);
     });
-  })();
+  }
+})();
 </script>
+
 
 <!-- CURRENCY SWITCHER SCRIPT -->
 <script>
