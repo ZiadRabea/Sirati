@@ -558,25 +558,17 @@
       <a href="/{{website.unique_name}}/skills"> + Add/Remove Skill<i class="fas fa-brush"></i></a>
     {% endif %}
   </section>
-  
-  {%if website.experience_set.all and not user.profile == website.user%}
+
   <div class="section-title">My Journey</div>
   <section id="timeline" class="timeline">
     {% for experience in website.experience_set.all %}
       <div class="milestone">{{experience.job}} | {{experience.employer}}</div>
     {% endfor %}
+    {% if user.profile == website.user %}
+      <a style="text-decoration: none; font-weight: bold;" href="/{{website.unique_name}}/work" class="milestone"> + | Add a new experience</a>
+    {% endif %}
   </section>
-  {%elif user.profile == website.user%}
-  <div class="section-title">My Journey</div>
-  <section id="timeline" class="timeline">
-    {% for experience in website.experience_set.all %}
-      <div class="milestone">{{experience.job}} | {{experience.employer}}</div>
-    {% endfor %}
-    
-    <a style="text-decoration: none; font-weight: bold;" href="/{{website.unique_name}}/work" class="milestone"> + | Add a new experience</a>
-  
-  </section>
-  {%endif%}
+
   <div class="section-title">Projects</div>
   <section id="projects" class="projects">
     {% for project in website.project_set.all %}
