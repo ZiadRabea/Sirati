@@ -721,7 +721,28 @@
         </div>
       </div>
     {% endfor %}
-    {% if user.profile == website.user %}
+    {% if not website.project_set.all %}
+    <div class="empty-state" style="grid-column:1/-1;">
+      <i class="fas fa-folder-open"></i>
+
+      {% if user.profile == website.user %}
+        <h4>No projects yet</h4>
+        <p>
+          Projects are the heart of your portfolio.
+          Add one to showcase what you’ve built or worked on.
+        </p>
+        <a href="/{{website.unique_name}}/projects">Create your first project</a>
+      {% else %}
+        <h4>No projects to show</h4>
+        <p>
+          This user hasn’t published any projects yet.
+          Check back later to see their work.
+        </p>
+      {% endif %}
+    </div>
+  {% endif %}
+
+    {% if user.profile == website.user and website.project_set.all%}
       <a style="text-decoration: none; color: whitesmoke;" href="/{{website.unique_name}}/projects" class="project-card"><strong>+ Add Project</strong><br><br>Create a new project</a>
     {% endif %}
   </section>
