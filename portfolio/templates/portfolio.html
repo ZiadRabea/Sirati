@@ -590,6 +590,26 @@
     {% for skill in website.skill_set.all %}
       <div class="card">{{skill.skill}}</div>
     {% endfor %}
+    {%if not website.skill_set.all%}
+     <div class="empty-state">
+      <i class="fas fa-chart-bar"></i>
+
+      {% if user.profile == website.user %}
+        <h4>No skills added yet</h4>
+        <p>
+          This section will showcase your strengths and expertise.
+          Add a few skills to bring your profile to life.
+        </p>
+        <a href="/{{website.unique_name}}/skills">Add your first skill</a>
+      {% else %}
+        <h4>No skills to display</h4>
+        <p>
+          This user hasn’t added any skills yet.
+          Check back later as their profile grows.
+        </p>
+      {% endif %}
+    </div>
+    {%endif%}
   </section>
 
   <div class="section-title">Skills</div>
