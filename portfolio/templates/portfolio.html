@@ -657,7 +657,27 @@
     {% for experience in website.experience_set.all %}
       <div class="milestone">{{experience.job}} | {{experience.employer}}</div>
     {% endfor %}
-    {% if user.profile == website.user %}
+    {% if not website website.experience_set.all %}
+    <div class="empty-state" style="margin-left:-30px;">
+      <i class="fas fa-route"></i>
+
+      {% if user.profile == website.user %}
+        <h4>Your journey starts here</h4>
+        <p>
+          Add your work experience, milestones, or achievements
+          to tell your professional story.
+        </p>
+        <a href="/{{website.unique_name}}/work">Add experience</a>
+      {% else %}
+        <h4>No journey shared yet</h4>
+        <p>
+          This timeline hasn’t been filled in yet.
+          Check back soon for updates.
+        </p>
+      {% endif %}
+    </div>
+  {% endif %}
+    {% if user.profile == website.user and website.experience_set.all%}
       <a style="text-decoration: none; font-weight: bold;" href="/{{website.unique_name}}/work" class="milestone"> + | Add a new experience</a>
     {% endif %}
   </section>
