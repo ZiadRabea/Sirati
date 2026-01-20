@@ -411,6 +411,58 @@
       transform: translateY(-3px);
       box-shadow: 0 6px 18px rgba(159,124,255,0.35);
     }
+    /* ---------------------------
+   Empty states
+    --------------------------- */
+    .empty-state {
+      width: 100%;
+      padding: 40px 24px;
+      border-radius: 18px;
+      border: 1px dashed rgba(255,255,255,0.12);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      text-align: center;
+      color: #cfcfcf;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .empty-state i {
+      font-size: 28px;
+      opacity: 0.8;
+      color: #7c5cff;
+    }
+
+    .empty-state h4 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #f1f1f1;
+    }
+
+    .empty-state p {
+      max-width: 420px;
+      font-size: 0.95rem;
+      line-height: 1.45;
+      color: #bdbdbd;
+    }
+
+    .empty-state a {
+      margin-top: 10px;
+      padding: 10px 22px;
+      border-radius: 10px;
+      background: linear-gradient(90deg,#7c5cff,#00f2ff);
+      color: #08121a;
+      font-weight: 700;
+      text-decoration: none;
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+
+    .empty-state a:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(124,92,255,0.25);
+    }
 
   </style>
 </head>
@@ -554,12 +606,33 @@
       </div>
     </div>
     {% endfor %}
-    {% if user.profile == website.user %}
+    {%if not website.skill_set.all%}
+     <div class="empty-state">
+      <i class="fas fa-chart-bar"></i>
+
+      {% if user.profile == website.user %}
+        <h4>No skills added yet</h4>
+        <p>
+          This section will showcase your strengths and expertise.
+          Add a few skills to bring your profile to life.
+        </p>
+        <a href="/{{website.unique_name}}/skills">Add your first skill</a>
+      {% else %}
+        <h4>No skills to display</h4>
+        <p>
+          This user hasn’t added any skills yet.
+          Check back later as their profile grows.
+        </p>
+      {% endif %}
+    </div>
+    {%endif%}
+    {% if user.profile == website.user and website.skill_set.all%}
       <a href="/{{website.unique_name}}/skills"> + Add/Remove Skill<i class="fas fa-brush"></i></a>
     {% endif %}
   </section>
 
   <div class="section-title">My Journey</div>
+
   <section id="timeline" class="timeline">
     {% for experience in website.experience_set.all %}
       <div class="milestone">{{experience.job}} | {{experience.employer}}</div>
@@ -570,6 +643,7 @@
   </section>
 
   <div class="section-title">Projects</div>
+  
   <section id="projects" class="projects">
     {% for project in website.project_set.all %}
       <div class="project-card" data-tech="{{ project.tech|default:'[]'|escapejs }}">
