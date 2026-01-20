@@ -572,9 +572,9 @@
     {% for experience in website.experience_set.all %}
       <div class="milestone">{{experience.job}} | {{experience.employer}}</div>
     {% endfor %}
-    {% if user.profile == website.user %}
-      <a style="text-decoration: none; font-weight: bold;" href="/{{website.unique_name}}/work" class="milestone"> + | Add a new experience</a>
-    {% endif %}
+    
+    <a style="text-decoration: none; font-weight: bold;" href="/{{website.unique_name}}/work" class="milestone"> + | Add a new experience</a>
+  
   </section>
   {%endif%}
   <div class="section-title">Projects</div>
