@@ -21,7 +21,6 @@ import hmac
 import hashlib
 import os
 import uuid
-from.utils import send_email_with_link
 import urllib
 import random
 
@@ -475,7 +474,9 @@ def book_webhook(request, item, email):
         subject = "Your Book Purchase"
         body = "Thank you for your purchase! Here is your book:"
         attachment_url = f"{os.environ.get('book_url')}"  # direct download link
-        send_email_with_link(subject, body, email, attachment_url)
+        email_msg = EmailMessage(subject, body, to=[email])
+        email_msg.attach_file(attachment_url)
+        email_msg.send()
     elif item == 'course':
         print("book + course sale")
     return JsonResponse({"message": f"Thank you for your trust"}, status=200)
