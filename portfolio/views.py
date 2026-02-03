@@ -494,8 +494,8 @@ def book_webhook(request, item, email):
 
     elif item == 'course':
         subject = "✅ Your Book Purchase"
-        attachment_url = os.environ.get('book_url')  # direct download link
-        body = "Thank you for your purchase! The book is attached to this email."
+        attachment_url = os.environ.get('bundle_url')  # direct download link
+        body = "Thank you for your purchase! The Package (Book + Course) is attached to this email."
 
         try:
             # Fetch file content from the direct download URL
@@ -503,7 +503,7 @@ def book_webhook(request, item, email):
             resp.raise_for_status()
             file_content = resp.content
             # Try to guess a filename from the URL
-            filename = attachment_url.split("/")[-1] or "book.pdf"
+            filename = attachment_url.split("/")[-1] or "Book + Course"
 
             # Create email and attach the file
             email_msg = EmailMessage(subject, body, to=[email])
