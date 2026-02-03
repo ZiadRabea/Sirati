@@ -474,7 +474,7 @@ def book_webhook(request, item, email):
     if item == "book":
         subject = "Your Book Purchase"
         body = "Thank you for your purchase! Here is your book:"
-        attachment_url = f"{os.environ.get("book_url")}"  # direct download link
+        attachment_url = f"{os.environ.get('book_url')}"  # direct download link
         send_email_with_link(subject, body, email, attachment_url)
     elif item == 'course':
         print("book + course sale")
