@@ -23,6 +23,7 @@ import os
 import uuid
 import urllib
 import random
+import requests
 
 KASHIER_SECRET = os.environ.get("Testing_MID")
 
@@ -472,12 +473,45 @@ def book_webhook(request, item, email):
 
     if item == "book":
         subject = "✅ Your Book Purchase"
-        attachment_url = f"{os.environ.get('book_url')}"  # direct download link
-        body = "Thank you for your purchase! Here is your book:\n\n" + attachment_url
-        email_msg = EmailMessage(subject, body, to=[email])
-        email_msg.send()
+        attachment_url = os.environ.get('book_url')  # direct download link
+        body = "Thank you for your purchase! The book is attached to this email."
+
+        try:
+            # Fetch file content from the direct download URL
+            resp = requests.get(attachment_url, timeout=15)
+            resp.raise_for_status()
+            file_content = resp.content
+            # Try to guess a filename from the URL
+            filename = attachment_url.split("/")[-1] or "book.pdf"
+
+            # Create email and attach the file
+            email_msg = EmailMessage(subject, body, to=[email])
+            email_msg.attach(filename, file_content, "application/octet-stream")
+            email_msg.send()
+            print(f"Book sent to {email}, file: {filename}")
+        except Exception as e:
+            print(f"Failed to fetch or send the book: {e}")
+
     elif item == 'course':
-        print("book + course sale")
+        subject = "✅ Your Book Purchase"
+        attachment_url = os.environ.get('book_url')  # direct download link
+        body = "Thank you for your purchase! The book is attached to this email."
+
+        try:
+            # Fetch file content from the direct download URL
+            resp = requests.get(attachment_url, timeout=15)
+            resp.raise_for_status()
+            file_content = resp.content
+            # Try to guess a filename from the URL
+            filename = attachment_url.split("/")[-1] or "book.pdf"
+
+            # Create email and attach the file
+            email_msg = EmailMessage(subject, body, to=[email])
+            email_msg.attach(filename, file_content, "application/octet-stream")
+            email_msg.send()
+            print(f"Book sent to {email}, file: {filename}")
+        except Exception as e:
+            print(f"Failed to fetch or send the book: {e}")
     return JsonResponse({"message": f"Thank you for your trust"}, status=200)
 
 
