@@ -495,11 +495,11 @@ def book_webhook(request, item, email):
     elif item == 'course':
         subject = "✅ Your Package (Book + Course) Purchase"
         attachment_url = os.environ.get('bundle_url')  # direct download link
-        body = "Thank you for your purchase! You can downlaod the Package (Book + Course) from the following URL.\n\n" + attachment_url
+        body = "Thank you for your purchase! Your Package (Book + Course) is attached to this email. \n\n" + attachment_url
 
         try:
+            # Create email and attach the file
             email_msg = EmailMessage(subject, body, to=[email])
-            email_msg.attach(filename, file_content, "application/octet-stream")
             email_msg.send()
             print(f"Book sent to {email}, file: {filename}")
         except Exception as e:
