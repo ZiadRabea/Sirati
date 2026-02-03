@@ -471,9 +471,9 @@ def book_webhook(request, item, email):
         return JsonResponse({"message": "Payment failed"}, status=200)
 
     if item == "book":
-        subject = "Your Book Purchase"
-        body = "Thank you for your purchase! Here is your book:"
+        subject = "✅ Your Book Purchase"
         attachment_url = f"{os.environ.get('book_url')}"  # direct download link
+        body = "Thank you for your purchase! Here is your book:\n\n" + attachment_url
         email_msg = EmailMessage(subject, body, to=[email])
         email_msg.attach_file(attachment_url)
         email_msg.send()
