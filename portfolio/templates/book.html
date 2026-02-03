@@ -187,6 +187,7 @@ function buyProduct(productType) {
   const emailError = document.getElementById('emailError');
 
   if (!email || !email.includes('@')) {
+    alert("يرجى إدخال البريد الاليكتروني بالأعلى لاستلام الكتاب")
     emailError.textContent = "يرجى إدخال بريد إلكتروني صحيح";
     return;
   } else {
