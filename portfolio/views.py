@@ -21,10 +21,11 @@ import hmac
 import hashlib
 import os
 import uuid
-from.utils import validate_signature
+from.utils import send_email_with_link
 import urllib
 import random
-KASHIER_SECRET = os.environ.get("MID")
+
+KASHIER_SECRET = os.environ.get("Testing_MID")
 
 logger = logging.getLogger(__name__)
 # Create your views here.
@@ -363,11 +364,6 @@ def subscribe(request, plan):
 
     return render(request, "payment.html", context)
 
-# Copy and paste this code in your backend
-import hmac
-import hashlib
-
-
 @csrf_exempt
 @require_POST
 def kashier_webhook(request, plan, slug):
@@ -419,6 +415,72 @@ def kashier_webhook(request, plan, slug):
     # messages.success(request, 'Portfolio activated successfully!')
     print(f"✅ Website {website.id} activated for plan {plan_lower}")
     return JsonResponse({"message": f"Website activated for plan {plan_lower}"}, status=200)
+
+
+def get_book(request):
+    MID = "MID-41408-888"
+    book_amount = 250
+    course_book_amount = 450
+    currency = "EGP"
+    orderid = f"booksale-{uuid.uuid4().hex[:8]}" 
+    CustomerReference = 1
+    book_path = '/?payment={}.{}.{}.{}'.format( MID, orderid, book_amount, currency )
+    book_path = bytes(book_path, 'utf-8')
+    course_path = '/?payment={}.{}.{}.{}'.format( MID, orderid, course_book_amount, currency )
+    course_path = bytes(course_path, 'utf-8')
+    secret= bytes(KASHIER_SECRET, 'utf-8')
+    book_hash_string = hmac.new(secret, book_path, hashlib.sha256).hexdigest()
+    course_hash_string = hmac.new(secret, course_path, hashlib.sha256).hexdigest()
+    redirect_url = urllib.parse.quote(f"https://www.sirati.space/")
+
+    context = {
+        "mid": MID,
+        "book_hash_string": book_hash_string,
+        "course_hash_string": course_hash_string,
+        "book_amount": book_amount,
+        "course_amount": course_book_amount,
+        "currency": currency,
+        "orderid": orderid,
+        "encoded_url": redirect_url
+    }
+
+    return render(request, "book.html", context)
+
+# Book Webhook
+@csrf_exempt
+@require_POST
+def book_webhook(request, item, email):
+    print("webhook reached")
+    # Parse JSON or form data
+    try:
+        data = json.loads(request.body.decode("utf-8"))["data"]
+    except json.JSONDecodeError:
+        data = request.POST.dict()
+
+    print(data)
+
+    if not data:
+        return HttpResponseBadRequest("Empty payload")
+
+    # # Verify signature
+    # if not validate_signature(data, KASHIER_SECRET):
+    #     return JsonResponse({"error": "Invalid signature"}, status=403)
+    status = data.get("status")
+    print(status)
+
+    if status != "SUCCESS":
+        return JsonResponse({"message": "Payment failed"}, status=200)
+
+    if item == "book":
+        subject = "Your Book Purchase"
+        body = "Thank you for your purchase! Here is your book:"
+        attachment_url = f"{os.environ.get("book_url")}"  # direct download link
+        send_email_with_link(subject, body, email, attachment_url)
+    elif item == 'course':
+        print("book + course sale")
+    return JsonResponse({"message": f"Thank you for your trust"}, status=200)
+
+
 
 @login_required
 def admin_dashboard(request):

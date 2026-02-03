@@ -491,7 +491,20 @@
     <p class="text-gray-500 mt-8">© 2025 Sirati. All rights reserved.</p>
   </div>
 </footer>
+<div id="floating-book-link"
+     class="fixed bottom-6 right-6 z-50 bg-white border border-gray-200 shadow-lg rounded-full px-4 py-3 flex items-center gap-3">
 
+  <a href="/book"
+     class="text-sm font-semibold text-indigo-600 hover:text-indigo-700 transition whitespace-nowrap">
+    📘 تعلّم البرمجة من الصفر
+  </a>
+
+  <button onclick="closeBookLink()"
+          aria-label="إغلاق"
+          class="text-gray-400 hover:text-gray-700 transition text-sm">
+    <i class="fa-solid fa-xmark"></i>
+  </button>
+</div>
 <!-- CAROUSEL SCRIPT -->
 <script>
   const slides = document.querySelectorAll('.fade-slide');
@@ -651,5 +664,14 @@
     });
   })();
 </script>
+<script>
+  function closeBookLink() {
+    const el = document.getElementById('floating-book-link');
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(12px)';
+    setTimeout(() => el.remove(), 200);
+  }
+</script>
+
 </body>
 </html>

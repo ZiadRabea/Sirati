@@ -1,0 +1,222 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>تعلم البرمجة من الصفر — بدون خوف</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>html, body { height: 100%; }</style>
+</head>
+<body class="bg-gradient-to-b from-slate-50 via-white to-slate-50 text-slate-800">
+
+  <div class="max-w-5xl mx-auto p-6">
+    <!-- Header / Hero -->
+    <header class="text-center mb-8">
+      <h1 class="text-3xl md:text-4xl font-extrabold text-slate-900">تعلم البرمجة من الصفر — بدون خوف</h1>
+      <p class="mt-3 text-slate-600 max-w-2xl mx-auto">
+        كتاب عملي ومبسط يشرح المفاهيم الأساسية المشتركة بين لغات البرمجة، لتتمكن من الانتقال لأي لغة أخرى خلال ساعات إلى أيام.
+      </p>
+    </header>
+
+    <!-- Cards -->
+    <div class="mt-6 mb-10 text-center">
+      <input id="emailInput" type="email" placeholder="أدخل بريدك الإلكتروني" class="border rounded px-4 py-2 w-64 text-right" />
+      <div class="mt-4 flex justify-center gap-3">
+      </div>
+      <p id="emailError" class="text-red-500 mt-2 text-sm"></p>
+    </div>
+    <main class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+      <!-- Card 1: الكتاب فقط -->
+      <article id="option1" class="relative bg-white rounded-2xl shadow-md p-6 transform transition hover:-translate-y-1 duration-200 order-last md:order-none">
+        <div class="flex justify-center mb-4">
+          <img src="{% static 'imgs/book.png' %}" alt="غلاف الكتاب" class="object-cover rounded-lg shadow-sm" />
+        </div>
+        <h3 class="text-xl font-semibold text-amber-600 text-right">الكتاب فقط</h3>
+        <p class="mt-2 text-slate-600 text-right">مدخل عملي للمبتدئين لكسر خوف البرمجة وفهم المفاهيم الأساسية.</p>
+
+        <!-- Features list -->
+        <div class="mt-4 text-right">
+          <h4 class="font-semibold mb-2">المميزات</h4>
+          <ul class="space-y-2 text-sm">
+            <li class="flex items-center justify-between gap-4">
+              <div class="flex items-center gap-3">
+                <!-- check -->
+                <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-emerald-50 text-emerald-600 shrink-0" aria-hidden>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="block"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+                <span>عدد الصفحات — <strong>263 صفحة</strong></span>
+              </div>
+              <span class="text-emerald-600 font-semibold">✔</span>
+            </li>
+
+            <li class="flex items-center justify-between gap-4">
+              <div class="flex items-center gap-3">
+                <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-emerald-50 text-emerald-600 shrink-0" aria-hidden>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+                <span>شرح عملي مع أمثلة حقيقية — Hands-on</span>
+              </div>
+              <span class="text-emerald-600 font-semibold">✔</span>
+            </li>
+
+            <li class="flex items-center justify-between gap-4">
+              <div class="flex items-center gap-3">
+                <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-red-50 text-red-600 shrink-0" aria-hidden>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+                <span>دورة فيديو عملية مدتها 1 ساعة</span>
+              </div>
+              <span class="text-red-600 font-semibold">✖</span>
+            </li>
+
+            <li class="flex items-center justify-between gap-4">
+              <div class="flex items-center gap-3">
+                <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-red-50 text-red-600 shrink-0" aria-hidden>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+                <span>تطبيق مرئي لمشاريع واقعية</span>
+              </div>
+              <span class="text-red-600 font-semibold">✖</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="mt-4 text-right">
+          <div class="text-sm text-slate-500">السعر</div>
+          <div class="text-2xl text-slate-900"><span style="color:red; font-weight: lighter;">-50%</span> <br> <span class="font-extrabold">250 جنيه </span> <span style="color:gray">≈ $5</span></div>
+        </div>
+        <br>
+        <button style="float: left;" onclick="buyProduct('book')" class="bg-white border border-amber-500 text-amber-600 px-4 py-2 rounded-lg font-semibold shadow hover:bg-amber-50 transition">
+          احصل على الكتاب
+        </button>
+      </article>
+
+      <!-- Card 2: الكتاب + الكورس -->
+      <article id="option2" class="relative bg-white rounded-2xl shadow-xl p-6 border-2 border-amber-400 transform transition hover:-translate-y-1 duration-200 order-first md:order-none">
+        <div class="absolute -top-3 right-6 bg-amber-500 text-white rounded-full px-3 py-1 text-sm font-semibold shadow">الأكثر قيمة</div>
+        <div class="flex justify-center mb-4">
+          <img src="{% static 'imgs/bundle.png' %}" alt="الكتاب + الكورس" class="object-cover rounded-lg shadow-sm" />
+        </div>
+        <h3 class="text-xl font-semibold text-amber-600 text-right">الكتاب + دورة فيديو (ساعة)</h3>
+        <p class="mt-2 text-slate-600 text-right">كل محتوى الكتاب مع دورة فيديو عملية توضّح التطبيق خطوة بخطوة لتبدأ بثقة.</p>
+
+        <!-- Features list (bundle) -->
+        <div class="mt-4 text-right">
+          <h4 class="font-semibold mb-2">المميزات</h4>
+          <ul class="space-y-2 text-sm">
+            <li class="flex items-center justify-between gap-4">
+              <div class="flex items-center gap-3">
+                <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-emerald-50 text-emerald-600 shrink-0" aria-hidden>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+                <span>عدد الصفحات — <strong>263 صفحة</strong></span>
+              </div>
+              <span class="text-emerald-600 font-semibold">✔</span>
+            </li>
+
+            <li class="flex items-center justify-between gap-4">
+              <div class="flex items-center gap-3">
+                <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-emerald-50 text-emerald-600 shrink-0" aria-hidden>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+                <span>شرح عملي مع أمثلة حقيقية — Hands-on</span>
+              </div>
+              <span class="text-emerald-600 font-semibold">✔</span>
+            </li>
+
+            <li class="flex items-center justify-between gap-4">
+              <div class="flex items-center gap-3">
+                <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-emerald-50 text-emerald-600 shrink-0" aria-hidden>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+                <span>دورة فيديو عملية مدتها <strong>1 ساعة</strong></span>
+              </div>
+              <span class="text-emerald-600 font-semibold">✔</span>
+            </li>
+
+            <li class="flex items-center justify-between gap-4">
+              <div class="flex items-center gap-3">
+                <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-emerald-50 text-emerald-600 shrink-0" aria-hidden>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+                <span>تطبيق مرئي لمشاريع واقعية</span>
+              </div>
+              <span class="text-emerald-600 font-semibold">✔</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="mt-4 text-right">
+          <div class="text-sm text-slate-500">السعر</div>
+          <div class="text-2xl text-slate-900"><span style="color:red; font-weight: lighter;">-50%</span> <br> <span class="font-extrabold">450 جنيه </span> <span style="color:gray">≈ $9</span></div>
+        </div>
+        <button style="float: left;" onclick="buyProduct('course')" class="bg-amber-500 text-white px-4 py-2 rounded-lg font-semibold shadow hover:scale-105 transition">
+          احصل على الباقة الكاملة
+        </button>
+      </article>
+    </main>
+
+    <!-- Trust / micro-info -->
+    <section class="mt-8 bg-white rounded-lg p-4 shadow-sm text-right">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
+            <path d="M12 2v20" stroke="#0ea5a4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M2 12h20" stroke="#0ea5a4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div>
+            <div class="text-sm text-slate-600">دفع آمن — طرق متعددة</div>
+            <div class="text-xs text-slate-400">كروت ائتمان دولية أو محلية، محفظة الهاتف</div>
+          </div>
+        </div>
+        <div class="text-sm text-slate-600">هل تريد نسخة مخصصة أو توقيع؟ أرسل طلباً إلى <a href="mailto:support@sirati.space" class="text-amber-600 font-medium">support@sirati.space</a></div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="mt-6 text-center text-xs text-slate-500">
+      نسخة خاصة — غير مخصصة لإعادة البيع.
+    </footer>
+  </div>
+
+<script>
+function buyProduct(productType) {
+  const emailInput = document.getElementById('emailInput');
+  const email = emailInput.value.trim();
+  const emailError = document.getElementById('emailError');
+
+  if (!email || !email.includes('@')) {
+    emailError.textContent = "يرجى إدخال بريد إلكتروني صحيح";
+    return;
+  } else {
+    emailError.textContent = "";
+  }
+
+  let amount, hashString;
+  if (productType === 'book') {
+    amount = "{{book_amount}}";
+    hashString = "{{book_hash_string}}";
+  } else if (productType === 'course') {
+    amount = "{{course_amount}}";
+    hashString = "{{course_hash_string}}";
+  }
+
+  const paymentUrl = "https://payments.kashier.io/?" +
+    "merchantId={{mid}}" +
+    "&orderId={{orderid}}" +
+    "&amount=" + amount +
+    "&currency={{currency}}" +
+    "&hash=" + hashString +
+    "&mode=" + "test" +
+    "&display=en&enable3DS=true"+
+    "&merchantRedirect={{encoded_url}}" +
+    "&serverWebhook=https://www.sirati.space/kashier/bookwebhook/" + productType + "/" + email +
+    "&notes=''";
+
+  window.location.href = paymentUrl;
+}
+</script>
+
+</body>
+</html>
