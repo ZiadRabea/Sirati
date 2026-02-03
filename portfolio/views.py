@@ -25,7 +25,7 @@ import urllib
 import random
 import requests
 
-KASHIER_SECRET = os.environ.get("Testing_MID")
+KASHIER_SECRET = os.environ.get("MID")
 
 logger = logging.getLogger(__name__)
 # Create your views here.
