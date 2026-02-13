@@ -298,7 +298,7 @@ def publish_website(request, key):
         code.user.save()
         code.expired = True
         code.save()
-        Report.objects.create(amount=500, portfolio=website, action="payment", coupon=website.user.invited)
+        Report.objects.create(amount=2500, portfolio=website, action="payment", coupon=website.user.invited)
         messages.success(request, 'Portfolio activated successfully!')
         return redirect(f"/{website.unique_name}")
     elif code.plan == "Monthly" and not code.expired:
@@ -310,7 +310,7 @@ def publish_website(request, key):
         code.user.save()
         code.expired = True
         code.save()
-        Report.objects.create(amount=50, portfolio=website, action="payment", coupon=website.user.invited)
+        Report.objects.create(amount=250, portfolio=website, action="payment", coupon=website.user.invited)
         messages.success(request, 'Portfolio activated successfully!')
         return redirect(f"/{website.unique_name}")
     
@@ -323,7 +323,7 @@ def publish_website(request, key):
         code.user.save()
         code.expired = True
         code.save()
-        Report.objects.create(amount=150, portfolio=website, action="payment", coupon=website.user.invited)
+        Report.objects.create(amount=750, portfolio=website, action="payment", coupon=website.user.invited)
         messages.success(request, 'Portfolio activated successfully!')
         return redirect(f"/{website.unique_name}")
     else:
@@ -340,9 +340,9 @@ def publish_code(request):
 @login_required
 def subscribe(request, plan):
     MID = "MID-41408-888"
-    if plan =="monthly": amount = 50
-    if plan == "yearly": amount = 500
-    if plan == "quarterly": amount = 150
+    if plan =="monthly": amount = 250
+    if plan == "yearly": amount = 2500
+    if plan == "quarterly": amount = 750
     currency = "EGP"
     orderid = f"{plan}-{uuid.uuid4().hex[:8]}" 
     CustomerReference = 1
