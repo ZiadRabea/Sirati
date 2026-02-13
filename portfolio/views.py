@@ -395,7 +395,7 @@ def kashier_webhook(request, plan, slug):
 
     # Plan-based activation
     plan_days = {"monthly": 30, "quarterly": 90, "yearly": 365}
-    plan_amounts = {"monthly": 50, "quarterly": 150, "yearly": 500}
+    plan_amounts = {"monthly": 250, "quarterly": 750, "yearly": 2500}
 
     plan_lower = plan.lower()
     if plan_lower not in plan_days:
