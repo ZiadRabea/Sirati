@@ -222,7 +222,7 @@ function buyProduct(productType) {
     "&display=en&enable3DS=true"+
     "&merchantRedirect={{encoded_url}}" +
     "&serverWebhook=https://www.sirati.space/kashier/bookwebhook/" + productType + "/" + email +
-    "&notes=''";
+    "&notes='Email=" + encodeURIComponent(email) + "'";
 
   window.location.href = paymentUrl;
 }
