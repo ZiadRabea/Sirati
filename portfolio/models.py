@@ -105,3 +105,7 @@ class Report(models.Model):
 
     def __str__(self):
         return f"EGP {self.amount} | {self.action} | {self.portfolio.user}"
+
+class Lead(models.Model):
+    email = models.EmailField()
+    payment_success = models.BooleanField()
