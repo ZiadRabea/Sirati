@@ -469,9 +469,10 @@ def book_webhook(request, item, email):
     print(status)
 
     if status != "SUCCESS":
-        
+        Lead.objects.create(email=email, payment_success=False)
         return JsonResponse({"message": "Payment failed"}, status=200)
-
+    else:
+        Lead.objects.create(email=email, payment_success=True)
 
     if item == "book":
         subject = "✅ Your Book Purchase"
@@ -493,7 +494,6 @@ def book_webhook(request, item, email):
             # Create email and attach the file
             email_msg = EmailMessage(subject, body, to=[email])
             email_msg.send()
-
         except Exception as e:
             print(f"Failed to fetch or send the book: {e}")
     return JsonResponse({"message": f"Thank you for your trust"}, status=200)
