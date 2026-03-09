@@ -96,7 +96,7 @@
           <div class="text-2xl text-slate-900"><span style="color:red; font-weight: lighter;">-50%</span> <br> <span class="font-extrabold">250 جنيه </span> <span style="color:gray">≈ $5.26</span></div>
         </div>
         <br>
-        <button style="float: left;" onclick="buyProduct('book')" class="bg-white border border-amber-500 text-amber-600 px-4 py-2 rounded-lg font-semibold shadow hover:bg-amber-50 transition">
+        <button style="float: left;" onclick="buyProduct('book', '{{book_amount}}', '{{book_hash_string}}', '{{mid}}', '{{orderid}}','{{encoded_url}}')" class="bg-white border border-amber-500 text-amber-600 px-4 py-2 rounded-lg font-semibold shadow hover:bg-amber-50 transition">
           احصل على الكتاب
         </button>
       </article>
@@ -160,7 +160,7 @@
           <div class="text-sm text-slate-500">السعر</div>
           <div class="text-2xl text-slate-900"><span style="color:red; font-weight: lighter;">-50%</span> <br> <span class="font-extrabold">450 جنيه </span> <span style="color:gray">≈ $9.46</span></div>
         </div>
-        <button style="float: left;" onclick="buyProduct('course')" class="bg-amber-500 text-white px-4 py-2 rounded-lg font-semibold shadow hover:scale-105 transition">
+        <button style="float: left;" onclick="buyProduct('course', '{{course_amount}}', '{{course_hash_string}}', '{{mid}}', '{{orderid}}','{{encoded_url}}')" class="bg-amber-500 text-white px-4 py-2 rounded-lg font-semibold shadow hover:scale-105 transition">
           احصل على الباقة الكاملة
         </button>
       </article>
@@ -189,44 +189,7 @@
     </footer>
   </div>
 
-<script>
-function buyProduct(productType) {
-  const emailInput = document.getElementById('emailInput');
-  const email = emailInput.value.trim();
-  const emailError = document.getElementById('emailError');
-
-  if (!email || !email.includes('@')) {
-    alert("يرجى إدخال البريد الاليكتروني بالأعلى لاستلام الكتاب")
-    emailError.textContent = "يرجى إدخال بريد إلكتروني صحيح";
-    return;
-  } else {
-    emailError.textContent = "";
-  }
-
-  let amount, hashString;
-  if (productType === 'book') {
-    amount = "{{book_amount}}";
-    hashString = "{{book_hash_string}}";
-  } else if (productType === 'course') {
-    amount = "{{course_amount}}";
-    hashString = "{{course_hash_string}}";
-  }
-
-  const paymentUrl = "https://payments.kashier.io/?" +
-    "merchantId={{mid}}" +
-    "&orderId={{orderid}}" +
-    "&amount=" + amount +
-    "&currency={{currency}}" +
-    "&hash=" + hashString +
-    "&mode=" + "live" +
-    "&display=en&enable3DS=true"+
-    "&merchantRedirect={{encoded_url}}" +
-    "&serverWebhook=https://www.sirati.space/kashier/bookwebhook/" + productType + "/" + email +
-    "&notes=''";
-
-  window.location.href = paymentUrl;
-}
-</script>
+<script src="{%static 'js/hook.js'%}"></script>
 
 </body>
 </html>

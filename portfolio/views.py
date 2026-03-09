@@ -24,6 +24,7 @@ import uuid
 import urllib
 import random
 import requests
+from.helpers import is_valid_signature
 
 KASHIER_SECRET = os.environ.get("MID")
 
@@ -451,52 +452,49 @@ def get_book(request):
 @require_POST
 def book_webhook(request, item, email):
     print("webhook reached")
-    # Parse JSON or form data
+
+    received_sig = request.headers.get("x-kashier-signature")
+    if not is_valid_signature(request.body, received_sig):
+        print(f"SECURITY ALERT: Invalid signature attempt for {email}")
+        return JsonResponse({"error": "Unauthorized signature"}, status=403)
+
+    # 2. Parse the validated data
     try:
-        data = json.loads(request.body.decode("utf-8"))["data"]
-    except json.JSONDecodeError:
-        data = request.POST.dict()
+        payload = json.loads(request.body.decode("utf-8"))
+        # Kashier usually wraps the actual data in a 'data' or 'payload' key
+        data = payload.get("data", payload)
+    except (json.JSONDecodeError, UnicodeDecodeError):
+        return HttpResponseBadRequest("Invalid payload format")
 
-    print(data)
-
-    if not data:
-        return HttpResponseBadRequest("Empty payload")
-
-    # # Verify signature
-    # if not validate_signature(data, KASHIER_SECRET):
-    #     return JsonResponse({"error": "Invalid signature"}, status=403)
+    # 3. Check Payment Status
     status = data.get("status")
-    print(status)
+    payment_success = (status == "SUCCESS")
+    
+    Lead.objects.create(email=email, payment_success=payment_success)
 
-    if status != "SUCCESS":
-        Lead.objects.create(email=email, payment_success=False)
-        return JsonResponse({"message": "Payment failed"}, status=200)
-    else:
-        Lead.objects.create(email=email, payment_success=True)
+    if not payment_success:
+        return JsonResponse({"message": "Payment recorded as failed"}, status=200)
 
-    if item == "book":
-        subject = "✅ Your Book Purchase"
-        attachment_url = os.environ.get('book_url')  # direct download link
-        body = "Thank you for your purchase! The book is attached to this email.\n\n" + attachment_url
+    try:
+        if item == "book":
+            subject = "✅ Your Book Purchase"
+            url = os.environ.get('book_url')
+            body = f"Thank you for your purchase! Your book link: {url}"
+        elif item == "course":
+            subject = "✅ Your Package (Book + Course) Purchase"
+            url = os.environ.get('bundle_url')
+            body = f"Thank you! Your bundle link: {url}"
+        else:
+            return JsonResponse({"error": "Invalid item type"}, status=400)
 
-        try:
-            email_msg = EmailMessage(subject, body, to=[email])
-            email_msg.send()
-        except Exception as e:
-            print(f"Failed to fetch or send the book: {e}")
+        email_msg = EmailMessage(subject, body, to=[email])
+        email_msg.send()
+        
+    except Exception as e:
+        print(f"Delivery Error: {e}")
+        return JsonResponse({"error": "Delivery failed, but payment was verified"}, status=500)
 
-    elif item == 'course':
-        subject = "✅ Your Package (Book + Course) Purchase"
-        bundle_url = os.environ.get('bundle_url')  # direct download link
-        body = "Thank you for your purchase! Your Package (Book + Course) is attached to this email. \n\n" + bundle_url
-
-        try:
-            # Create email and attach the file
-            email_msg = EmailMessage(subject, body, to=[email])
-            email_msg.send()
-        except Exception as e:
-            print(f"Failed to fetch or send the book: {e}")
-    return JsonResponse({"message": f"Thank you for your trust"}, status=200)
+    return JsonResponse({"message": "Success and delivered"}, status=200)
 
 
 
@@ -625,26 +623,3 @@ def contact_website(request, slug):
     except Exception:
         logger.exception("Failed to send contact email for website %s", unique_name)
         return JsonResponse({"status": "error", "message": "Failed to send message. Please try again later."}, status=500)
-
-def stress_test_create_report(request):
-    website = Website.objects.order_by("?").first()
-    if not website:
-        return JsonResponse({"error": "No Website found"}, status=400)
-
-    # Create the report
-    report = Report.objects.create(
-        coupon=f"TEST-{random.randint(1000,9999)}",
-        amount=random.randint(10, 1000),
-        portfolio=website,
-        action=random.choice(["payment", "withdrawal"]),
-        date=timezone.now()
-    )
-
-    return JsonResponse({
-        "id": report.id,
-        "coupon": report.coupon,
-        "amount": report.amount,
-        "action": report.action,
-        "portfolio": report.portfolio.id,
-        "date": report.date,
-    })
