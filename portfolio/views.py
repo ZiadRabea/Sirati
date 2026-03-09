@@ -451,8 +451,6 @@ def get_book(request):
 @csrf_exempt
 @require_POST
 def book_webhook(request, item, email):
-    print("webhook reached")
-
     received_sig = request.headers.get("x-kashier-signature")
     if not is_valid_signature(request.body, received_sig):
         print(f"SECURITY ALERT: Invalid signature attempt for {email}")
@@ -465,7 +463,7 @@ def book_webhook(request, item, email):
         return HttpResponseBadRequest("Invalid payload format")
     status = data.get("status")
     payment_success = (status == "SUCCESS")
-    print(status)
+    
     Lead.objects.create(email=email, payment_success=payment_success)
 
     if not payment_success:
