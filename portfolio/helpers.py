@@ -10,7 +10,7 @@ def is_valid_signature(raw_body, received_sig):
     secret_key = os.environ.get("MID")
     data = raw_body.get("signatureKeys")
     
-    concat_values = urllib.parse.quote_plus("&".join(f"{key}={raw_body.get(key,'')}" for key in data))
+    concat_values = "&".join(f"{key}={urllib.parse.quote(raw_body.get(key,''))}" for key in data)
     
     print(f"Concat Values : {concat_values}" if concat_values else "NO Concat Values")
 
