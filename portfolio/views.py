@@ -454,6 +454,9 @@ def book_webhook(request, item, email):
     print("webhook reached")
 
     received_sig = request.headers.get("x-kashier-signature")
+    print(received_sig)
+    print("_____")
+    print(request.body)
     if not is_valid_signature(request.body, received_sig):
         print(f"SECURITY ALERT: Invalid signature attempt for {email}")
         return JsonResponse({"error": "Unauthorized signature"}, status=403)
