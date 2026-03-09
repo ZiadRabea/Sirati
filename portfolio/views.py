@@ -464,18 +464,29 @@ def book_webhook(request, item, email):
         Lead.objects.create(email=email, payment_success=payment_success)
         if item == "book":
             subject = "✅ Your Book Purchase"
-            url = os.environ.get('book_url')
-            body = f"Thank you for your purchase! Your book link: {url}"
-            email_msg = EmailMessage(subject, body, to=[email])
-            email_msg.send()
-        elif item == "course":
+            attachment_url = os.environ.get('book_url')  # direct download link
+            body = "Thank you for your purchase! The book is attached to this email.\n\n" + attachment_url
+
+            try:
+                email_msg = EmailMessage(subject, body, to=[email])
+                email_msg.send()
+            except Exception as e:
+                print(f"Failed to fetch or send the book: {e}")
+
+        elif item == 'course':
             subject = "✅ Your Package (Book + Course) Purchase"
-            url = os.environ.get('bundle_url')
-            body = f"Thank you! Your bundle link: {url}"
-            email_msg = EmailMessage(subject, body, to=[email])
-            email_msg.send()
-        else:
-            return JsonResponse({"error": "Invalid item type"}, status=400)
+            bundle_url = os.environ.get('bundle_url')  # direct download link
+            body = "Thank you for your purchase! Your Package (Book + Course) is attached to this email. \n\n" + bundle_url
+
+            try:
+                # Create email and attach the file
+                email_msg = EmailMessage(subject, body, to=[email])
+                email_msg.send()
+
+            except Exception as e:
+                print(f"Failed to fetch or send the book: {e}")
+        
+        return JsonResponse({"message": f"Thank you for your trust"}, status=200)
 
         
         
