@@ -7,7 +7,7 @@ import urllib
 def is_valid_signature(raw_body, received_sig):
     print(f"Received Signature : {received_sig}")
     print(f"raw body: {raw_body}")
-    secret_key = os.environ.get("Testing_MID")
+    secret_key = os.environ.get("MID")
     data = raw_body.get("signatureKeys")
     
     concat_values = "&".join(

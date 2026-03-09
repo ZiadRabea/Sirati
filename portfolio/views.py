@@ -26,7 +26,7 @@ import random
 import requests
 from.helpers import is_valid_signature
 
-KASHIER_SECRET = os.environ.get("Testing_MID")
+KASHIER_SECRET = os.environ.get("MID")
 
 logger = logging.getLogger(__name__)
 # Create your views here.
