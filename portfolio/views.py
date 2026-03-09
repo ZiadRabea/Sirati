@@ -379,9 +379,6 @@ def kashier_webhook(request, plan, slug):
     if not data:
         return HttpResponseBadRequest("Empty payload")
 
-    # # Verify signature
-    # if not validate_signature(data, KASHIER_SECRET):
-    #     return JsonResponse({"error": "Invalid signature"}, status=403)
     status = data.get("status")
     print(status)
 
