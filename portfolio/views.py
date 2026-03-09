@@ -453,34 +453,31 @@ def book_webhook(request, item, email):
     if not is_valid_signature(data, received_sig):
         print(f"SECURITY ALERT: Invalid signature attempt for {email}")
         return JsonResponse({"error": "Unauthorized signature"}, status=403)
-    
-    # try:
-    #     # payload = json.loads(request.body.decode("utf-8"))
-    #     # data = payload.get("data", payload)
-    # except (json.JSONDecodeError, UnicodeDecodeError):
-    #     return HttpResponseBadRequest("Invalid payload format")
+
     status = data.get("status")
     payment_success = (status == "SUCCESS")
-    
-    Lead.objects.create(email=email, payment_success=payment_success)
 
     if not payment_success:
         return JsonResponse({"message": "Payment recorded as failed"}, status=200)
 
     try:
+        Lead.objects.create(email=email, payment_success=payment_success)
         if item == "book":
             subject = "✅ Your Book Purchase"
             url = os.environ.get('book_url')
             body = f"Thank you for your purchase! Your book link: {url}"
+            email_msg = EmailMessage(subject, body, to=[email])
+            email_msg.send()
         elif item == "course":
             subject = "✅ Your Package (Book + Course) Purchase"
             url = os.environ.get('bundle_url')
             body = f"Thank you! Your bundle link: {url}"
+            email_msg = EmailMessage(subject, body, to=[email])
+            email_msg.send()
         else:
             return JsonResponse({"error": "Invalid item type"}, status=400)
 
-        email_msg = EmailMessage(subject, body, to=[email])
-        email_msg.send()
+        
         
     except Exception as e:
         print(f"Delivery Error: {e}")
