@@ -16,6 +16,6 @@ def is_valid_signature(raw_body, received_sig):
         value = raw_body.get(key, "")
         concat_values += str(value)
     
-    print(concat_values)
+    print(concat_values if concat_values else "NO ConCAT Values")
 
     return None
