@@ -457,16 +457,12 @@ def book_webhook(request, item, email):
     if not is_valid_signature(request.body, received_sig):
         print(f"SECURITY ALERT: Invalid signature attempt for {email}")
         return JsonResponse({"error": "Unauthorized signature"}, status=403)
-
-    # 2. Parse the validated data
+    
     try:
         payload = json.loads(request.body.decode("utf-8"))
-        # Kashier usually wraps the actual data in a 'data' or 'payload' key
         data = payload.get("data", payload)
     except (json.JSONDecodeError, UnicodeDecodeError):
         return HttpResponseBadRequest("Invalid payload format")
-
-    # 3. Check Payment Status
     status = data.get("status")
     payment_success = (status == "SUCCESS")
     
