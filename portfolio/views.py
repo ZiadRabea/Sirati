@@ -372,7 +372,7 @@ def kashier_webhook(request, plan, slug):
     try:
         data = json.loads(request.body.decode("utf-8"))["data"]
     except json.JSONDecodeError:
-        data = request.POST.dict()
+        return HttpResponseBadRequest("Invalid payload format")
 
     print(data)
 
@@ -465,7 +465,7 @@ def book_webhook(request, item, email):
         return HttpResponseBadRequest("Invalid payload format")
     status = data.get("status")
     payment_success = (status == "SUCCESS")
-    
+    print(status)
     Lead.objects.create(email=email, payment_success=payment_success)
 
     if not payment_success:
