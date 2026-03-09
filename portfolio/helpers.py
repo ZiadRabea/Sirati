@@ -9,7 +9,7 @@ def is_valid_signature(raw_body, received_sig):
     print(f"raw body: {raw_body}")
     secret_key = os.environ.get("MID")
     data = raw_body.get("signatureKeys")
-    
+    data.pop(2)
     concat_values = "&".join(
         f"{key}={urllib.parse.quote(str(raw_body.get(key,'')))}" for key in data
         )
