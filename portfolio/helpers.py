@@ -1,21 +1,30 @@
 import hmac
 import hashlib
+import json
 import os
 
+
 def is_valid_signature(raw_body, received_sig):
-    """
-    Verifies that the request came from Kashier by hashing the 
-    raw body with your secret key.
-    """
-    secret = os.environ.get('KASHIER_SECRET') # or settings.KASHIER_SECRET
+    secret = os.environ.get("KASHIER_SECRET")
     if not secret or not received_sig:
         return False
-        
+
+    body = json.loads(raw_body)
+    data = body.get("data", {})
+
+    signature_keys = data.get("signatureKeys", [])
+
+    parts = []
+    for key in signature_keys:
+        value = data.get(key, "")
+        parts.append(f"{key}={value}")
+
+    message = "&".join(parts)
+
     computed_sig = hmac.new(
-        secret.encode('utf-8'),
-        raw_body,
+        secret.encode("ascii"),
+        message.encode("ascii"),
         hashlib.sha256
-    ).hexdigest()
-    
-    # Use compare_digest to prevent timing attacks
-    return hmac.compare_digest(computed_sig, received_sig)
+    ).hexdigest().lower()
+
+    return hmac.compare_digest(computed_sig, received_sig.lower())
