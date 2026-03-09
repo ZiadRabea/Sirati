@@ -449,15 +449,16 @@ def get_book(request):
 @require_POST
 def book_webhook(request, item, email):
     received_sig = request.headers.get("x-kashier-signature")
-    if not is_valid_signature(request.body.get("data"), received_sig):
+    data = json.loads(request.body.decode("utf-8"))["data"]
+    if not is_valid_signature(data, received_sig):
         print(f"SECURITY ALERT: Invalid signature attempt for {email}")
         return JsonResponse({"error": "Unauthorized signature"}, status=403)
     
-    try:
-        payload = json.loads(request.body.decode("utf-8"))
-        data = payload.get("data", payload)
-    except (json.JSONDecodeError, UnicodeDecodeError):
-        return HttpResponseBadRequest("Invalid payload format")
+    # try:
+    #     # payload = json.loads(request.body.decode("utf-8"))
+    #     # data = payload.get("data", payload)
+    # except (json.JSONDecodeError, UnicodeDecodeError):
+    #     return HttpResponseBadRequest("Invalid payload format")
     status = data.get("status")
     payment_success = (status == "SUCCESS")
     
