@@ -23,4 +23,4 @@ def is_valid_signature(raw_body, received_sig):
         hashlib.sha256
     ).hexdigest()
     
-    print(hmac.compare_digest(computed_sig, received_sig))
+    return hmac.compare_digest(computed_sig, received_sig)
