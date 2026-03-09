@@ -21,7 +21,7 @@ function buyProduct(productType, productamount, hash_string, mid, orderid, encod
     "&amount=" + amount +
     "&currency=EGP" +
     "&hash=" + hashString +
-    "&mode=" + "live" +
+    "&mode=" + "test" +
     "&display=en&enable3DS=true"+
     "&merchantRedirect="+ encoded_url +
     "&serverWebhook=https://www.sirati.space/kashier/bookwebhook/" + productType + "/" + email +
