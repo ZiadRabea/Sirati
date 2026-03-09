@@ -9,5 +9,13 @@ def is_valid_signature(raw_body, received_sig):
     print(f"raw body: {raw_body}")
 
     data = raw_body.get("signatureKeys")
-    print(data)
+    
+    concat_values = ""
+    for key in data:
+        # Get the value of this key from data
+        value = raw_body.get(key, "")
+        concat_values += str(value)
+    
+    print(concat_values)
+
     return None
