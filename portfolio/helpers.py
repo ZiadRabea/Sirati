@@ -11,7 +11,7 @@ def is_valid_signature(raw_body, received_sig):
     data = raw_body.get("signatureKeys")
     
     concat_values = "&".join(
-        f"{key}={urllib.parse.quote(raw_body.get(key,''))}" for key in data
+        f"{key}={urllib.parse.quote(str(raw_body.get(key,'')))}" for key in data
         )
 
     
