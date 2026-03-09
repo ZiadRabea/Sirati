@@ -19,5 +19,5 @@ def is_valid_signature(raw_body, received_sig):
         concat_values.encode("utf-8"),
         hashlib.sha256
     ).hexdigest()
-
-    print(computed_sig)
+    
+    print(hmac.compare_digest(computed_sig, received_sig))
