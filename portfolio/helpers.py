@@ -12,4 +12,4 @@ def is_valid_signature(raw_body, received_sig):
     
     concat_values = "&".join(f"{key}={data.get(key,'')}" for key in keys)
     
-    print(f"Concat Values : {concat_values}")
+    print(f"Concat Values : {concat_values}" if concat_values else "NO Concat Values")
