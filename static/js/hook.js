@@ -16,14 +16,14 @@ function buyProduct(productType, productamount, hash_string, mid, orderid, encod
     hashString = hash_string;
 
   const paymentUrl = "https://payments.kashier.io/?" +
-    "merchantId="+ mid +
-    "&orderId="+ orderid +
-    "&amount=" + amount +
+    "merchantId="+ String(mid) +
+    "&orderId="+ String(orderid) +
+    "&amount=" + String(amount) +
     "&currency=EGP" +
-    "&hash=" + hashString +
-    "&mode=" + "live" +
-    "&display=en&enable3DS=true"+
-    "&merchantRedirect="+ encoded_url +
+    "&hash=" + String(hashString) +
+    "&mode=" + "test" +
+    "&display=en&enable3DS=false"+
+    "&merchantRedirect="+ String(encoded_url) +
     "&serverWebhook=https://www.sirati.space/kashier/bookwebhook/" + productType + "/" + email +
     "&notes=''";
 
